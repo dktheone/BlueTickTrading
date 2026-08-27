@@ -63,14 +63,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3: Products */}
+          {/* Col 3: Legal & Policies */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Programs</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Legal & Compliance</h4>
             <ul className="space-y-2 text-sm text-slate-300">
-              <li><a href="#products" className="hover:text-[#2FFFB9] transition-colors">Price Action Mastery</a></li>
-              <li><a href="#products" className="hover:text-[#2FFFB9] transition-colors">Options Buying Precision</a></li>
-              <li><a href="#products" className="hover:text-[#2FFFB9] transition-colors">Smart Money Concepts</a></li>
-              <li><a href="#products" className="hover:text-[#2FFFB9] transition-colors">Market Psychology Playbook</a></li>
+              <li><Link href="/privacy-policy" className="hover:text-[#2FFFB9] transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-conditions" className="hover:text-[#2FFFB9] transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/data-collection-policy" className="hover:text-[#2FFFB9] transition-colors">Data Collection Policy</Link></li>
+              <li><Link href="/disclaimer" className="hover:text-[#2FFFB9] transition-colors">Risk Disclaimer</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-[#2FFFB9] transition-colors">Refund & Cancellation</Link></li>
             </ul>
           </div>
 
@@ -112,9 +113,11 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Blue Tick Trading School. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#contact" className="hover:text-[#2FFFB9]">Privacy Policy</a>
-            <a href="#contact" className="hover:text-[#2FFFB9]">Terms of Service</a>
-            <a href="#contact" className="hover:text-[#2FFFB9]">Refund Policy</a>
+            <Link href="/privacy-policy" className="hover:text-[#2FFFB9] transition-colors">Privacy Policy</Link>
+            <Link href="/terms-conditions" className="hover:text-[#2FFFB9] transition-colors">Terms of Service</Link>
+            <Link href="/data-collection-policy" className="hover:text-[#2FFFB9] transition-colors">Data Collection</Link>
+            <Link href="/disclaimer" className="hover:text-[#2FFFB9] transition-colors">Disclaimer</Link>
+            <Link href="/refund-policy" className="hover:text-[#2FFFB9] transition-colors">Refund Policy</Link>
           </div>
         </div>
 

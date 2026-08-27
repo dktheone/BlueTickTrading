@@ -22,7 +22,7 @@ export default function Community() {
             <div className="grid grid-cols-2 gap-4">
               <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/images/traderoom/Traderoom-jpg-01.jpg"
+                  src="/images/traderoom/Traderoom-02.jpg"
                   alt="Blue Tick Trading Community Session"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
