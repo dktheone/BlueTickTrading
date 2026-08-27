@@ -22,24 +22,33 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blueticktrading.com"),
-  title: "BlueTick Trading School | Master Online Trading & Market Strategies",
-  description: "Premier trading academy. Learn institutional price action, options strategies, risk management, and live market execution from expert traders.",
-  keywords: ["stock market courses", "trading school", "price action", "options trading", "technical analysis", "trading webinar", "BlueTick Trading"],
-  authors: [{ name: "BlueTick Trading School" }],
+  title: "Blue Tick Trading School | Master Stock & Options Trading with Amit Gupta",
+  description: "Learn institutional price action, BankNifty & Nifty options strategies, and risk management with Amit Gupta at Blue Tick Trading School.",
+  keywords: [
+    "Blue Tick Trading School",
+    "Amit Gupta",
+    "stock market course",
+    "price action trading",
+    "options trading course",
+    "banknifty strategy",
+    "trading mentor India"
+  ],
+  authors: [{ name: "Amit Gupta - Blue Tick Trading School" }],
   icons: {
-    icon: "/brand/b.png",
+    icon: "/brand/logo-sq.png",
+    apple: "/brand/logo-sq.png",
   },
   openGraph: {
-    title: "BlueTick Trading School | Master Online Trading",
-    description: "Learn proven price action and options trading strategies with live market webinars and mentorship.",
+    title: "Blue Tick Trading School | Master Online Trading with Amit Gupta",
+    description: "Learn proven price action and options trading strategies with live market webinars and mentorship by Amit Gupta.",
     url: "https://blueticktrading.com",
-    siteName: "BlueTick Trading School",
+    siteName: "Blue Tick Trading School",
     images: [
       {
-        url: "/brand/BlueTick Trading School.png",
+        url: "/brand/logo-wide.png",
         width: 1200,
         height: 630,
-        alt: "BlueTick Trading School",
+        alt: "Blue Tick Trading School Logo",
       },
     ],
     locale: "en_US",
@@ -54,7 +63,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${interTight.variable} scroll-smooth`}>
-      <body className="min-h-screen bg-[#F8FAFB] text-slate-800 font-sans flex flex-col antialiased">
+      <body className="min-h-screen bg-white text-slate-800 font-sans flex flex-col antialiased">
         {children}
       </body>
     </html>

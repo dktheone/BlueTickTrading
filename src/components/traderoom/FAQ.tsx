@@ -8,20 +8,20 @@ export default function FAQ() {
 
   const faqs = [
     {
-      q: "What is Traderoom and who is it for?",
-      a: "Traderoom is a premier online trading education academy designed for traders of all experience levels—from absolute beginners to active intermediate and advanced traders wanting structured price action strategies.",
+      q: "What is Blue Tick Trading School and who is Amit Gupta?",
+      a: "Blue Tick Trading School is a premier financial education academy founded by Amit Gupta, a full-time professional trader with 10+ years of experience in Indian equity, futures, and options markets. The school focuses on teaching institutional price action and strict risk management.",
     },
     {
-      q: "How are the courses structured?",
-      a: "Our courses include structured video modules, comprehensive PDF trading guides, live market webinar sessions, and interactive trading community discussions.",
+      q: "Are Amit Gupta's live sessions and webinars recorded?",
+      a: "Yes! Every single live webinar, weekend masterclass, and mentorship session is recorded in HD and provided to registered students with lifetime portal access.",
     },
     {
-      q: "Do I get lifetime access to course materials?",
-      a: "Yes, all purchased ebooks and course mentorship enrollments grant you full lifetime access to all learning materials, templates, and community channels.",
+      q: "Do I need prior trading experience to join?",
+      a: "No prior experience is necessary. We start from candlestick fundamentals and market structure before advancing to complex Options Buying and Smart Money Concepts.",
     },
     {
-      q: "Can I ask questions and get feedback on my trades?",
-      a: "Absolutely! Members have direct access to our live Q&A sessions and Discord community channels where mentors review charts and trade journals.",
+      q: "Does Blue Tick Trading School provide buy/sell tips or advisory?",
+      a: "No. We are strictly an educational institution. We do NOT provide stock tips, investment advice, or guaranteed return schemes. Our sole mission is to teach you how to become an independent, self-sufficient trader.",
     },
   ];
 
@@ -42,7 +42,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </h2>
           <p className="text-slate-600 text-sm sm:text-base">
-            Everything you need to know about our trading education and community.
+            Everything you need to know about Blue Tick Trading School and our mentorship format.
           </p>
         </div>
 

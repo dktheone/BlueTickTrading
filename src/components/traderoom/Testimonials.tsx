@@ -5,22 +5,22 @@ import { Star, Quote, CheckCircle2 } from "lucide-react";
 export default function Testimonials() {
   const reviews = [
     {
-      name: "Alex Morgan",
-      role: "Day Trader",
+      name: "Rohit Verma",
+      role: "BankNifty Options Trader • Lucknow",
       avatar: "/images/traderoom/Testimonials-01.jpg",
-      comment: "Traderoom completely transformed my approach to the market. The institutional order flow lessons and live chart breakdowns gave me confidence I never had before.",
+      comment: "Amit Gupta Sir's price action logic completely cleared all my confusion with indicator lag. Learning how to read liquidity sweeps made me consistently profitable in BankNifty options buying.",
     },
     {
-      name: "Sophia Martinez",
-      role: "Options Trader",
+      name: "Ananya Sharma",
+      role: "Swing Trader & Working Professional • Delhi",
       avatar: "/images/traderoom/Testimonials-02.jpg",
-      comment: "The precision entries course and risk-to-reward frameworks saved me thousands in unnecessary losses. Highly recommended for anyone serious about trading.",
+      comment: "The risk management framework taught at Blue Tick Trading School is gold. I finally stopped overtrading and now focus strictly on 1:3+ risk-to-reward setups. The weekend masterclasses are incredible!",
     },
     {
-      name: "David Chen",
-      role: "Swing Trader",
+      name: "Siddharth Mehta",
+      role: "Full-Time Stock Trader • Mumbai",
       avatar: "/images/traderoom/Testimonials-03.jpg",
-      comment: "Outstanding mentorship and community. Being able to ask questions and review real trades in the member channel is worth 10x the price of the course.",
+      comment: "Outstanding mentorship by Amit Sir. The community trade reviews and post-market chart breakdowns help you avoid common retail traps. Best investment I made in my trading career.",
     },
   ];
 
@@ -31,13 +31,13 @@ export default function Testimonials() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E3B43] text-[#2FFFB9] text-xs font-bold uppercase tracking-wider">
-            Testimonials ⭐
+            Student Reviews ⭐
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0E3B43]">
-            (674,029 reviews of Traderoom Online)
+            What Our Traders Say About Amit Gupta & Blue Tick
           </h2>
           <p className="text-slate-600 text-sm sm:text-base">
-            Read real stories from our global community of active learners.
+            Verified feedback from students who transformed their consistency with our mentorship.
           </p>
         </div>
 

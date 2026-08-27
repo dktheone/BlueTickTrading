@@ -5,40 +5,40 @@ import { Star, ShoppingBag, ArrowRight } from "lucide-react";
 export default function Products() {
   const products = [
     {
-      title: "Technical Analysis",
+      title: "Price Action & Technical Analysis",
       category: "Foundation",
-      price: "$29.00",
+      price: "₹2,999",
       image: "/images/traderoom/Ebook-01.jpg",
       rating: "5.0",
-      students: "1,240 learners",
-      desc: "Complete guide to chart patterns, trend lines, and volume profile indicators for equity & index traders.",
+      students: "3,240 learners",
+      desc: "Complete masterclass in chart patterns, support-resistance dynamics, volume spread analysis, and market structure.",
     },
     {
-      title: "Cryptocurrency Mastery",
-      category: "Crypto",
-      price: "$39.00",
+      title: "BankNifty & Nifty Options Buying",
+      category: "Derivatives",
+      price: "₹4,999",
       image: "/images/traderoom/Ebook-02.jpg",
       rating: "4.9",
-      students: "980 learners",
-      desc: "Navigate decentralized markets with blockchain analytics, on-chain metrics, and disciplined risk limits.",
+      students: "4,980 learners",
+      desc: "Master high-momentum options buying setups without theta decay traps. Learn timing, Greeks, and expiry day zero-hero trades.",
     },
     {
-      title: "Entries & Exits Precision",
-      category: "Advanced Price Action",
-      price: "$49.00",
+      title: "Institutional Smart Money Concepts",
+      category: "Advanced SMC",
+      price: "₹5,999",
       image: "/images/traderoom/Ebook-03.jpg",
       rating: "5.0",
-      students: "2,150 learners",
-      desc: "Master institutional order blocks, liquidity sweeps, and 1:3+ high probability intraday trade timing.",
+      students: "5,150 learners",
+      desc: "Unpack liquidity sweeps, Fair Value Gaps (FVG), order blocks, and 1:3+ high probability intraday trade confluences.",
     },
     {
-      title: "Essential Candlesticks",
-      category: "Core Patterns",
-      price: "$19.00",
+      title: "Candlestick & Market Psychology",
+      category: "Psychology Playbook",
+      price: "₹1,999",
       image: "/images/traderoom/Ebook-04.jpg",
       rating: "4.8",
-      students: "1,600 learners",
-      desc: "Learn to read price psychology behind single and multi-candle formations in real-time execution.",
+      students: "2,600 learners",
+      desc: "Master trader emotions, eliminate FOMO and revenge trading, and develop strict risk-first execution discipline.",
     },
   ];
 
@@ -49,13 +49,13 @@ export default function Products() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E3B43] text-[#2FFFB9] text-xs font-bold uppercase tracking-wider">
-            Our Products 💻
+            Our Mentorship Programs 💻
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0E3B43]">
-            Explore Our Comprehensive Courses & Ebooks
+            Blue Tick Trading School Programs & Handbooks
           </h2>
           <p className="text-slate-600 text-sm sm:text-base">
-            Get instant access to step-by-step trading handbooks and structured video curricula.
+            Structured courses, practical handbooks, and live market execution rooms curated by Amit Gupta.
           </p>
         </div>
 
@@ -103,15 +103,18 @@ export default function Products() {
 
               {/* Bottom Price & Button */}
               <div className="p-6 pt-0 flex items-center justify-between border-t border-slate-200/60 mt-4 pt-4">
-                <span className="text-xl font-extrabold text-[#0E3B43] font-mono">
-                  {item.price}
-                </span>
+                <div>
+                  <span className="text-xl font-extrabold text-[#0E3B43] font-mono block">
+                    {item.price}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">Lifetime Access</span>
+                </div>
 
                 <a
                   href="#contact"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold text-[#0E3B43] bg-[#2FFFB9] hover:bg-[#C5FF7C] transition-all shadow-md hover:shadow-[#2FFFB9]/30"
                 >
-                  <span>Get Course Now</span>
+                  <span>Enroll Now</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>

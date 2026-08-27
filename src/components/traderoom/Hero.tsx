@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Star, TrendingUp, Sparkles } from "lucide-react";
+import { ArrowRight, Star, TrendingUp, Sparkles, ShieldCheck } from "lucide-react";
 
 export default function Hero() {
   const avatars = [
@@ -33,27 +33,34 @@ export default function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#2FFFB9] text-xs sm:text-sm font-semibold backdrop-blur-md">
               <Sparkles className="w-3.5 h-3.5 text-[#2FFFB9]" />
-              <span>Mastering the Art of Trading</span>
+              <span>Blue Tick Trading School • Led by Amit Gupta</span>
             </div>
 
             {/* Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] tracking-tight">
-              Unlock Your Potential in the <span className="text-[#2FFFB9]">Global Financial</span> Markets
+              Unlock Your Potential in the <span className="text-[#2FFFB9]">Stock & Options</span> Markets
             </h1>
 
             {/* Description */}
             <p className="text-sm sm:text-base md:text-lg text-slate-200 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              Empower your trading journey with comprehensive courses designed for all levels. Gain the skills, strategies, and confidence needed to navigate the markets successfully.
+              Transform your trading journey with institutional price action, BankNifty & Nifty derivatives strategies, and disciplined risk-to-reward frameworks taught by Amit Gupta.
             </p>
 
             {/* CTA Button */}
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <a
+                href="#contact"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[#0E3B43] bg-[#2FFFB9] hover:bg-[#C5FF7C] transition-all duration-300 shadow-xl hover:shadow-[#2FFFB9]/30 text-sm sm:text-base hover:-translate-y-0.5"
+              >
+                <span>Join Next Live Webinar</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+
               <a
                 href="#products"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[#0E3B43] bg-[#2FFFB9] hover:bg-[#C5FF7C] transition-all duration-300 shadow-xl hover:shadow-[#2FFFB9]/30 text-sm sm:text-base hover:-translate-y-0.5"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 text-sm sm:text-base backdrop-blur-sm"
               >
-                <span>Explore Membership</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Explore Mentorship Programs</span>
               </a>
             </div>
 
@@ -72,9 +79,9 @@ export default function Hero() {
                 ))}
               </div>
               <div className="text-left text-xs sm:text-sm text-slate-200">
-                <span className="font-bold text-white block">15,000 Members Joined</span>
+                <span className="font-bold text-white block">15,000+ Students Mentored</span>
                 <span className="text-[#C5FF7C] flex items-center gap-1 font-medium">
-                  ★ Rated Excellent at 9.1/10 from 200 Reviews
+                  ★ 4.9/5 Rating from Active Community Traders
                 </span>
               </div>
             </div>
@@ -86,7 +93,7 @@ export default function Hero() {
             <div className="relative w-full max-w-md lg:max-w-none aspect-[4/3] sm:aspect-square flex items-center justify-center">
               <Image
                 src="/images/traderoom/Heros-04.png"
-                alt="Traderoom Hero Dashboard"
+                alt="Blue Tick Trading Dashboard"
                 width={560}
                 height={560}
                 className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"

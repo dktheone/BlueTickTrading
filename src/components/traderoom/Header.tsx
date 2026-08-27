@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -16,10 +16,10 @@ export default function Header() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-10 w-44">
+            <div className="relative h-12 w-48 sm:w-56">
               <Image
-                src="/images/traderoom/Logo-01-1.png"
-                alt="Traderoom Logo"
+                src="/brand/logo-wide.png"
+                alt="Blue Tick Trading School"
                 fill
                 className="object-contain object-left"
                 priority
@@ -33,7 +33,7 @@ export default function Header() {
               Home
             </Link>
             <a href="#about" className="hover:text-[#2FFFB9] transition-colors">
-              About
+              About Mentor
             </a>
             <a href="#services" className="hover:text-[#2FFFB9] transition-colors">
               Services
@@ -49,20 +49,20 @@ export default function Header() {
                 type="button"
                 className="flex items-center gap-1 hover:text-[#2FFFB9] transition-colors"
               >
-                <span>Pages</span>
+                <span>Curriculum</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
 
               {pagesDropdownOpen && (
                 <div className="absolute top-full left-0 w-48 py-2 bg-[#0E3B43] border border-white/15 rounded-2xl shadow-xl space-y-1 animate-in fade-in-50 duration-200">
                   <a href="#benefits" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
-                    Benefits
+                    Key Advantages
                   </a>
                   <a href="#products" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
-                    Our Courses & Ebooks
+                    Courses & Handbooks
                   </a>
                   <a href="#testimonials" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
-                    Testimonials
+                    Student Reviews
                   </a>
                   <a href="#faq" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
                     FAQ
@@ -72,7 +72,7 @@ export default function Header() {
             </div>
 
             <a href="#products" className="hover:text-[#2FFFB9] transition-colors">
-              Blog
+              Courses
             </a>
             <a href="#contact" className="hover:text-[#2FFFB9] transition-colors">
               Contact
@@ -85,7 +85,7 @@ export default function Header() {
               href="#contact"
               className="inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-bold text-[#0E3B43] bg-[#2FFFB9] hover:bg-[#C5FF7C] transition-all duration-300 shadow-md hover:shadow-[#2FFFB9]/30 hover:-translate-y-0.5"
             >
-              <span>Contact us</span>
+              <span>Join Next Webinar</span>
             </a>
           </div>
 
@@ -95,7 +95,7 @@ export default function Header() {
               href="#contact"
               className="px-4 py-2 rounded-full text-xs font-bold text-[#0E3B43] bg-[#2FFFB9]"
             >
-              Contact
+              Webinar
             </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -123,7 +123,7 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm text-white/90 hover:text-[#2FFFB9]"
             >
-              About
+              About Amit Gupta
             </a>
             <a 
               href="#services" 
@@ -137,14 +137,14 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm text-white/90 hover:text-[#2FFFB9]"
             >
-              Products & Courses
+              Courses & Programs
             </a>
             <a 
               href="#testimonials" 
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm text-white/90 hover:text-[#2FFFB9]"
             >
-              Testimonials
+              Student Reviews
             </a>
             <a 
               href="#faq" 
@@ -158,7 +158,7 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm text-white/90 hover:text-[#2FFFB9]"
             >
-              Contact
+              Contact Us
             </a>
           </div>
         )}
