@@ -95,14 +95,10 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider">Reach Us</h4>
             <ul className="space-y-3 text-sm text-slate-400">
-              <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-brand-mint shrink-0 mt-0.5" />
-                <span>SS/46, Moti Jheel Colony, Aishbagh, Lucknow, UP</span>
-              </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-brand-mint shrink-0" />
-                <a href="tel:+919889549999" className="hover:text-brand-mint transition-colors font-medium text-slate-200">
-                  +91 98895 49999
+                <a href="tel:+918004855663" className="hover:text-brand-mint transition-colors font-medium text-slate-200">
+                  +91 80048 55663
                 </a>
               </li>
               <li className="flex items-center gap-2.5">

@@ -100,9 +100,8 @@ export default function PrivacyPolicyPage() {
               <p>If you have any questions regarding this Privacy Policy or wish to request deletion of your data, please contact:</p>
               <div className="p-4 rounded-2xl bg-[#F8FAFB] border border-slate-200 text-xs text-slate-700 space-y-1">
                 <p><strong>Blue Tick Trading School</strong> (Lead Mentor: Amit Gupta)</p>
-                <p>Address: SS/46, Moti Jheel Colony, Aishbagh, Lucknow, UP, India</p>
                 <p>Email: <a href="mailto:support@blueticktrading.com" className="text-[#0E3B43] font-bold underline">support@blueticktrading.com</a></p>
-                <p>Phone: +91 98895 49999</p>
+                <p>Phone / WhatsApp: +91 80048 55663</p>
               </div>
             </section>
 

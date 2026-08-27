@@ -62,7 +62,7 @@ export default function RefundPolicyPage() {
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-[#0E3B43]">3. Contact Support</h2>
               <p>
-                For any enrollment or scheduling queries, please contact us at: <a href="mailto:support@blueticktrading.com" className="text-[#0E3B43] font-bold underline">support@blueticktrading.com</a> or call +91 98895 49999.
+                For any enrollment or scheduling queries, please contact us at: <a href="mailto:support@blueticktrading.com" className="text-[#0E3B43] font-bold underline">support@blueticktrading.com</a> or call +91 80048 55663.
               </p>
             </section>
 

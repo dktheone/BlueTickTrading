@@ -50,10 +50,10 @@ export default function Header() {
               <Mail className="w-3.5 h-3.5 text-brand-mint" /> support@blueticktrading.com
             </a>
             <a
-              href="tel:+919889549999"
+              href="tel:+918004855663"
               className="inline-flex items-center gap-1 text-slate-200 hover:text-brand-mint font-medium transition-colors"
             >
-              <Phone className="w-3.5 h-3.5 text-brand-mint" /> +91 98895 49999
+              <Phone className="w-3.5 h-3.5 text-brand-mint" /> +91 80048 55663
             </a>
           </div>
         </div>
