@@ -92,7 +92,7 @@ export default function Hero() {
           <div className="lg:col-span-5 relative flex justify-center">
             <div className="relative w-full max-w-md lg:max-w-none aspect-[4/3] sm:aspect-square flex items-center justify-center">
               <Image
-                src="/images/traderoom/Heros-04.png"
+                src="/images/traderoom/hero-02.png"
                 alt="Blue Tick Trading Dashboard"
                 width={560}
                 height={560}

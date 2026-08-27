@@ -30,7 +30,7 @@ export default function Community() {
               </div>
               <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl mt-8">
                 <Image
-                  src="/images/traderoom/Traderoom-jpg-02.jpg"
+                  src="/images/traderoom/Traderoom-jpg-03.jpg"
                   alt="Amit Gupta Mentoring Traders"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
@@ -56,7 +56,7 @@ export default function Community() {
             </h2>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Founded by **Amit Gupta**, Blue Tick Trading School is built on one simple principle: <span className="font-semibold text-slate-800">Learn to trade what you see, not what you think</span>. We cut through the hype of fake screenshots and teach you institutional price action, risk-to-reward mathematics, and real-time live execution.
+              Founded by <b>Amit Gupta</b>, Blue Tick Trading School is built on one simple principle: <span className="font-semibold text-slate-800">Learn to trade what you see, not what you think</span>. We cut through the hype of fake screenshots and teach you institutional price action, risk-to-reward mathematics, and real-time live execution.
             </p>
 
             {/* Mentor Credentials */}
