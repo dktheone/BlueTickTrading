@@ -1,0 +1,501 @@
+{
+  "title": "Blue Tick Trading School | Master Stock & Options Trading with Amit Gupta",
+  "meta_description": "Learn institutional price action, BankNifty & Nifty options strategies, and risk management with Amit Gupta at Blue Tick Trading School.",
+  "meta_robots": null,
+  "x_robots_tag": null,
+  "canonical": null,
+  "lang": "en",
+  "charset": "utf-8",
+  "viewport": "width=device-width, initial-scale=1, maximum-scale=5",
+  "favicon": "http://localhost:3000/brand/logo-sq.png",
+  "h1": [
+    "Unlock Your Potential in theStock & OptionsMarkets"
+  ],
+  "h2": [
+    "Services to help your success in the financial market",
+    "A Trading Community Dedicated To Your Financial Independence",
+    "Benefits of joining our course",
+    "Blue Tick Trading School Programs & Handbooks",
+    "What Our Traders Say About Amit Gupta & Blue Tick",
+    "Start Your Trading Journey WithBlue Tick Trading School",
+    "Frequently Asked Questions",
+    "Ready to Accelerate Your Trading Journey?"
+  ],
+  "h3": [
+    "Stock Trading",
+    "Crypto Trading",
+    "Forex Trading",
+    "Expert-Led Instruction",
+    "Hands-On Practical Training",
+    "Flexible Lifetime Access",
+    "Price Action & Technical Analysis",
+    "BankNifty & Nifty Options Buying",
+    "Institutional Smart Money Concepts",
+    "Candlestick & Market Psychology",
+    "Connect with Our Trading Counselors"
+  ],
+  "h4": [
+    "Trading tools & charting ecosystems we master",
+    "Rohit Verma",
+    "Ananya Sharma",
+    "Siddharth Mehta",
+    "Quick Links",
+    "Legal & Compliance",
+    "Webinar Updates"
+  ],
+  "h5": [],
+  "h6": [],
+  "images": [
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fbrand%2Flogo-wide.png&w=3840&q=75",
+      "alt": "Blue Tick Trading School",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": null
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-001.png&w=3840&q=75",
+      "alt": "Pattern",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonial-0001.jpg&w=3840&q=75",
+      "alt": "Member 1",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonial-0002.jpg&w=3840&q=75",
+      "alt": "Member 2",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonial-0003.jpg&w=3840&q=75",
+      "alt": "Member 3",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonial-0004.jpg&w=3840&q=75",
+      "alt": "Member 4",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Fhero-02.png&w=1200&q=75",
+      "alt": "Blue Tick Trading Dashboard",
+      "width": "560",
+      "height": "560",
+      "is_responsive_fill": false,
+      "loading": null
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-1.png&w=3840&q=75",
+      "alt": "Partner Logo 1",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-2.png&w=3840&q=75",
+      "alt": "Partner Logo 2",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-3.png&w=3840&q=75",
+      "alt": "Partner Logo 3",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-4.png&w=3840&q=75",
+      "alt": "Partner Logo 4",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-6.png&w=3840&q=75",
+      "alt": "Partner Logo 5",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2Flogo-preview-8.png&w=3840&q=75",
+      "alt": "Partner Logo 6",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-004.png&w=96&q=75",
+      "alt": "Stock Trading",
+      "width": "48",
+      "height": "48",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-003.png&w=96&q=75",
+      "alt": "Crypto Trading",
+      "width": "48",
+      "height": "48",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-005.png&w=96&q=75",
+      "alt": "Forex Trading",
+      "width": "48",
+      "height": "48",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTraderoom-02.jpg&w=3840&q=75",
+      "alt": "Blue Tick Trading Community Session",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTraderoom-jpg-03.jpg&w=3840&q=75",
+      "alt": "Amit Gupta Mentoring Traders",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-008.png&w=3840&q=75",
+      "alt": "Binance",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-012-1.png&w=3840&q=75",
+      "alt": "MetaTrader",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-010.png&w=3840&q=75",
+      "alt": "TradingView",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-009.png&w=3840&q=75",
+      "alt": "Coinbase",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-011-1.png&w=3840&q=75",
+      "alt": "Interactive Brokers",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-013.png&w=3840&q=75",
+      "alt": "Forex.com",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-015-1.png&w=128&q=75",
+      "alt": "Expert-Led Instruction",
+      "width": "64",
+      "height": "64",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-016-1.png&w=128&q=75",
+      "alt": "Hands-On Practical Training",
+      "width": "64",
+      "height": "64",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-017.png&w=128&q=75",
+      "alt": "Flexible Lifetime Access",
+      "width": "64",
+      "height": "64",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FEbook-01.jpg&w=3840&q=75",
+      "alt": "Price Action & Technical Analysis",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FEbook-02.jpg&w=3840&q=75",
+      "alt": "BankNifty & Nifty Options Buying",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FEbook-03.jpg&w=3840&q=75",
+      "alt": "Institutional Smart Money Concepts",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FEbook-04.jpg&w=3840&q=75",
+      "alt": "Candlestick & Market Psychology",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonials-01.jpg&w=3840&q=75",
+      "alt": "Rohit Verma",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonials-02.jpg&w=3840&q=75",
+      "alt": "Ananya Sharma",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTestimonials-03.jpg&w=3840&q=75",
+      "alt": "Siddharth Mehta",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-019.png&w=3840&q=75",
+      "alt": "Pattern",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FTraderoom-jpg-08.jpg&w=3840&q=75",
+      "alt": "Blue Tick Trading Community",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fbrand%2Flogo-wide.png&w=3840&q=75",
+      "alt": "Blue Tick Trading School",
+      "width": null,
+      "height": null,
+      "is_responsive_fill": true,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-023.png&w=48&q=75",
+      "alt": "Facebook",
+      "width": "20",
+      "height": "20",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-024.png&w=48&q=75",
+      "alt": "Twitter",
+      "width": "20",
+      "height": "20",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-025.png&w=48&q=75",
+      "alt": "Instagram",
+      "width": "20",
+      "height": "20",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    },
+    {
+      "src": "http://localhost:3000/_next/image?url=%2Fimages%2Ftraderoom%2FIcon-026.png&w=48&q=75",
+      "alt": "LinkedIn",
+      "width": "20",
+      "height": "20",
+      "is_responsive_fill": false,
+      "loading": "lazy"
+    }
+  ],
+  "links": {
+    "internal": [
+      {
+        "href": "http://localhost:3000/",
+        "text": "",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/",
+        "text": "Home",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/",
+        "text": "Home",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/privacy-policy",
+        "text": "Privacy Policy",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/terms-conditions",
+        "text": "Terms & Conditions",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/data-collection-policy",
+        "text": "Data Collection Policy",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/disclaimer",
+        "text": "Risk Disclaimer",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/refund-policy",
+        "text": "Refund & Cancellation",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/privacy-policy",
+        "text": "Privacy Policy",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/terms-conditions",
+        "text": "Terms of Service",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/data-collection-policy",
+        "text": "Data Collection",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/disclaimer",
+        "text": "Disclaimer",
+        "rel": []
+      },
+      {
+        "href": "http://localhost:3000/refund-policy",
+        "text": "Refund Policy",
+        "rel": []
+      }
+    ],
+    "external": [
+      {
+        "href": "tel:+918004855663",
+        "text": "+91 80048 55663",
+        "rel": []
+      },
+      {
+        "href": "mailto:support@blueticktrading.com",
+        "text": "support@blueticktrading.com",
+        "rel": []
+      }
+    ]
+  },
+  "pagination": {
+    "prev": null,
+    "next": null
+  },
+  "resource_hints": {
+    "preload": [
+      {
+        "href": "http://localhost:3000/_next/static/chunks/webpack.js?v=1787829414292",
+        "as": "script",
+        "type": null,
+        "crossorigin": null
+      }
+    ],
+    "preconnect": [],
+    "dns-prefetch": [],
+    "prefetch": [],
+    "prerender": []
+  },
+  "schema": [],
+  "open_graph": {
+    "og:title": "Blue Tick Trading School | Master Online Trading with Amit Gupta",
+    "og:description": "Learn proven price action and options trading strategies with live market webinars and mentorship by Amit Gupta.",
+    "og:url": "https://blueticktrading.com",
+    "og:site_name": "Blue Tick Trading School",
+    "og:locale": "en_US",
+    "og:image": "https://blueticktrading.com/brand/logo-wide.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "Blue Tick Trading School Logo",
+    "og:type": "website"
+  },
+  "twitter_card": {
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Blue Tick Trading School | Master Online Trading with Amit Gupta",
+    "twitter:description": "Learn proven price action and options trading strategies with live market webinars and mentorship by Amit Gupta.",
+    "twitter:image": "https://blueticktrading.com/brand/logo-wide.png",
+    "twitter:image:width": "1200",
+    "twitter:image:height": "630",
+    "twitter:image:alt": "Blue Tick Trading School Logo"
+  },
+  "word_count": 905,
+  "hreflang": []
+}

@@ -70,6 +70,10 @@
 
 ## 4. Route Inventory & Pages
 
+| /robots.txt | Static | src/app/robots.ts | Search engines & AI bots crawler rules with sitemap link. |
+| /sitemap.xml | Static | src/app/sitemap.ts | Dynamic XML sitemap indexing all valid pages with priorities. |
+| /llms.txt | Static | public/llms.txt | AI Engine (ChatGPT/Claude/Perplexity) markdown knowledge file. |
+
 | Route Path | Type | File Location | Purpose & Audience |
 | :--- | :--- | :--- | :--- |
 | `/` | Static | `src/app/page.tsx` | Main Homepage featuring 11 Traderoom sections (Hero, Partners, Services, About Mentor, Benefits, Courses, Reviews, CTA, FAQ, Contact Form, Footer). |
