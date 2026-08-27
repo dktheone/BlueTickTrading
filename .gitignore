@@ -1,5 +1,6 @@
 ﻿# Private Client Data & Raw Assets Archive
 _raw_assets/
+.agent/
 implementation-plans/
 *.pdf
 demographic.txt
