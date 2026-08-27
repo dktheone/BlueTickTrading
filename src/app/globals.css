@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-dark: #082126;
+    --brand-primary: #0E3B43;
+    --brand-teal: #10505C;
+    --brand-mint: #2FFFB9;
+    --brand-lime: #C5FF7C;
+    --brand-accent: #00E599;
+  }
+
+  body {
+    @apply bg-[#F7F9FA] text-[#1E293B] antialiased selection:bg-brand-mint selection:text-brand-dark;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-bold text-brand-dark;
+  }
+}
+
+@layer components {
+  .traderoom-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .traderoom-hero-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl;
+  }
+
+  .traderoom-card {
+    @apply bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300;
+  }
+
+  .badge-mint {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-mint/15 text-emerald-800 border border-brand-mint/30;
+  }
+
+  .badge-dark {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-primary text-brand-mint border border-brand-mint/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold text-brand-dark bg-brand-mint hover:bg-brand-accent transition-all duration-300 shadow-lg hover:shadow-brand-mint/30 hover:-translate-y-0.5 active:translate-y-0 text-sm md:text-base;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold text-white bg-brand-teal/80 hover:bg-brand-teal border border-white/20 transition-all duration-300 backdrop-blur-sm hover:-translate-y-0.5 active:translate-y-0 text-sm md:text-base;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-semibold text-brand-primary border-2 border-brand-primary/30 hover:border-brand-primary hover:bg-brand-primary hover:text-white transition-all duration-300 text-sm;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
