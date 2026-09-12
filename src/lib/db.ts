@@ -1,4 +1,4 @@
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import path from "path";
 import fs from "fs";
 
@@ -14,13 +14,13 @@ export interface LeadRecord {
   created_at?: string;
 }
 
-let dbInstance: Database.Database | null = null;
+let dbInstance: DatabaseSync | null = null;
 
 /**
- * Returns a singleton SQLite3 database instance.
- * Automatically initializes data directory and 'leads' table schema.
+ * Returns a singleton SQLite3 database instance using Node.js's built-in node:sqlite module.
+ * Requires ZERO native external binaries, ZERO Python, and ZERO node-gyp compilation!
  */
-export function getDb(): Database.Database {
+export function getDb(): DatabaseSync {
   if (!dbInstance) {
     const dbDir = path.join(process.cwd(), "data");
     if (!fs.existsSync(dbDir)) {
@@ -28,10 +28,7 @@ export function getDb(): Database.Database {
     }
 
     const dbPath = process.env.SQLITE_DB_PATH || path.join(dbDir, "leads.db");
-    dbInstance = new Database(dbPath);
-
-    // Enable WAL (Write-Ahead Logging) for high performance and concurrency
-    dbInstance.pragma("journal_mode = WAL");
+    dbInstance = new DatabaseSync(dbPath);
 
     // Initialize Schema
     dbInstance.exec(`
@@ -64,22 +61,22 @@ export function insertLead(lead: Omit<LeadRecord, "id" | "created_at">): { id: n
     const db = getDb();
     const stmt = db.prepare(`
       INSERT INTO leads (name, email, phone, experience, interest, message, ip_address)
-      VALUES (@name, @email, @phone, @experience, @interest, @message, @ip_address)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const info = stmt.run({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      experience: lead.experience || null,
-      interest: lead.interest || null,
-      message: lead.message || null,
-      ip_address: lead.ip_address || null,
-    });
+    const info = stmt.run(
+      lead.name,
+      lead.email,
+      lead.phone,
+      lead.experience || null,
+      lead.interest || null,
+      lead.message || null,
+      lead.ip_address || null
+    );
 
     return { id: info.lastInsertRowid, success: true };
   } catch (error) {
-    console.error("[SQLite Error] Failed to insert lead record:", error);
+    console.error("[Node SQLite Error] Failed to insert lead record:", error);
     throw error;
   }
 }
@@ -96,9 +93,9 @@ export function getAllLeads(limit = 500): LeadRecord[] {
       ORDER BY id DESC
       LIMIT ?
     `);
-    return stmt.all(limit) as LeadRecord[];
+    return stmt.all(limit) as unknown as LeadRecord[];
   } catch (error) {
-    console.error("[SQLite Error] Failed to fetch leads:", error);
+    console.error("[Node SQLite Error] Failed to fetch leads:", error);
     return [];
   }
 }
@@ -112,7 +109,7 @@ export function getLeadsCount(): number {
     const row = db.prepare(`SELECT COUNT(*) as count FROM leads`).get() as { count: number };
     return row?.count || 0;
   } catch (error) {
-    console.error("[SQLite Error] Failed to get count:", error);
+    console.error("[Node SQLite Error] Failed to get count:", error);
     return 0;
   }
 }

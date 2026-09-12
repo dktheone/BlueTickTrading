@@ -3,7 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   allowedDevOrigins: ["192.168.0.*", "192.168.*.*", "localhost:3000"],
-  serverExternalPackages: ["better-sqlite3"],
   images: {
     remotePatterns: [
       {
