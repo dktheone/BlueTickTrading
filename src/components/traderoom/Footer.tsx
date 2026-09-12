@@ -58,6 +58,7 @@ export default function Footer() {
               <li><Link href="/" className="hover:text-[#2FFFB9] transition-colors">Home</Link></li>
               <li><a href="#about" className="hover:text-[#2FFFB9] transition-colors">About Amit Gupta</a></li>
               <li><a href="#services" className="hover:text-[#2FFFB9] transition-colors">Services</a></li>
+              <li><a href="#time-cycles" className="hover:text-[#2FFFB9] transition-colors">Time Cycle Trading</a></li>
               <li><a href="#benefits" className="hover:text-[#2FFFB9] transition-colors">Benefits</a></li>
               <li><a href="#contact" className="hover:text-[#2FFFB9] transition-colors">Contact</a></li>
             </ul>

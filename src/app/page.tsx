@@ -4,7 +4,7 @@ import Partners from "@/components/traderoom/Partners";
 import Services from "@/components/traderoom/Services";
 import Community from "@/components/traderoom/Community";
 import Benefits from "@/components/traderoom/Benefits";
-import Products from "@/components/traderoom/Products";
+import TimeCycleTrading from "@/components/traderoom/TimeCycleTrading";
 import Testimonials from "@/components/traderoom/Testimonials";
 import CTA from "@/components/traderoom/CTA";
 import FAQ from "@/components/traderoom/FAQ";
@@ -21,7 +21,7 @@ export default function HomePage() {
         <Services />
         <Community />
         <Benefits />
-        <Products />
+        <TimeCycleTrading />
         <Testimonials />
         <CTA />
         <FAQ />

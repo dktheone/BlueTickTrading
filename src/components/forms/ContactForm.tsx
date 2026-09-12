@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Send, CheckCircle2, ShieldCheck, AlertCircle, Loader2, Sparkles, Phone, Mail, User, BookOpen } from "lucide-react";
+import { 
+  Send, CheckCircle2, ShieldCheck, AlertCircle, Loader2, 
+  Sparkles, Phone, Mail, User, BookOpen, MessageCircle, Send as TelegramIcon 
+} from "lucide-react";
 
 interface ContactFormProps {
   defaultInterest?: string;
@@ -22,6 +25,7 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
   const [formLoadTime, setFormLoadTime] = useState<number>(0);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [feedbackMsg, setFeedbackMsg] = useState("");
+  const [telegramUrl, setTelegramUrl] = useState("https://t.me/blueticktrading");
 
   useEffect(() => {
     setFormLoadTime(Date.now());
@@ -51,7 +55,10 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
 
       if (res.ok && data.success) {
         setStatus("success");
-        setFeedbackMsg(data.message || "Thank you! Your details have been submitted successfully.");
+        setFeedbackMsg(data.message || "Thank you! Your registration has been confirmed.");
+        if (data.telegramLink) {
+          setTelegramUrl(data.telegramLink);
+        }
         setFormData({
           name: "",
           email: "",
@@ -67,7 +74,7 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
       }
     } catch (err) {
       setStatus("error");
-      setFeedbackMsg("Network error occurred. Please try again later.");
+      setFeedbackMsg("Network error occurred. Please check your connection and try again.");
     }
   };
 
@@ -84,27 +91,63 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
         </h3>
         <p className="text-sm text-slate-600">
           {isWebinarMode
-            ? "Fill out the quick form below to receive the private Zoom link on your WhatsApp & Email."
-            : "Have questions about our mentorship or webinars? Leave your details below and we will guide you."}
+            ? "Fill out the quick form below to receive the private Zoom link on your WhatsApp, Telegram & Email."
+            : "Have questions about Time Cycle Trading or our upcoming webinars? Leave your details below."}
         </p>
       </div>
 
       {status === "success" ? (
-        <div className="p-8 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-4 animate-in fade-in-50 duration-300">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+        <div className="p-8 rounded-3xl bg-emerald-50/80 border border-emerald-200 text-center space-y-6 animate-in fade-in-50 duration-300">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
             <CheckCircle2 className="w-10 h-10" />
           </div>
-          <h4 className="text-xl font-bold text-emerald-900">Registration Confirmed!</h4>
-          <p className="text-sm text-emerald-800 max-w-md mx-auto leading-relaxed">
-            {feedbackMsg}
-          </p>
+
+          <div className="space-y-2">
+            <h4 className="text-2xl font-extrabold text-emerald-950">Registration Confirmed!</h4>
+            <p className="text-sm text-emerald-800 max-w-md mx-auto leading-relaxed">
+              {feedbackMsg}
+            </p>
+          </div>
+
+          {/* Direct Telegram & WhatsApp Action Box */}
+          <div className="p-5 rounded-2xl bg-white border border-emerald-200/80 shadow-sm space-y-3 text-left">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-[#2AABEE]" /> Instant Community Access:
+            </div>
+            <p className="text-xs text-slate-600">
+              Join our official Telegram community now for real-time turn date charts, live zoom access, and daily market prep:
+            </p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <a
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#2AABEE] hover:bg-[#229ED9] text-white font-bold text-xs shadow-md transition-all hover:scale-[1.02]"
+              >
+                <TelegramIcon className="w-4 h-4" />
+                <span>Join Official Telegram</span>
+              </a>
+
+              <a
+                href="https://wa.me/918004855663?text=Hi%20Amit%20Sir%2C%20I%20just%20registered%20for%20the%20BlueTick%20Webinar!"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs shadow-md transition-all hover:scale-[1.02]"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Chat on WhatsApp</span>
+              </a>
+            </div>
+          </div>
+
           <div className="pt-2">
             <button
               type="button"
               onClick={() => setStatus("idle")}
-              className="px-6 py-2.5 rounded-full bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors"
+              className="text-xs text-slate-500 hover:text-slate-800 underline font-medium transition-colors"
             >
-              Submit Another Inquiry
+              Submit Another Registration
             </button>
           </div>
         </div>
@@ -153,14 +196,14 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="name@example.com"
+                placeholder="rahul@gmail.com"
                 className="w-full px-4 py-3.5 rounded-xl bg-[#F8FAFB] border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-mint focus:border-brand-teal transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-brand-teal" /> WhatsApp Number <span className="text-rose-500">*</span>
+                <Phone className="w-3.5 h-3.5 text-brand-teal" /> WhatsApp / Telegram Mobile <span className="text-rose-500">*</span>
               </label>
               <input
                 type="tel"
@@ -174,10 +217,10 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
             </div>
           </div>
 
-          {/* Trading Experience Level */}
+          {/* Experience Level */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-brand-teal" /> Your Trading Experience Level
+              <BookOpen className="w-3.5 h-3.5 text-brand-teal" /> Your Trading Experience
             </label>
             <select
               name="experience"
@@ -185,17 +228,17 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
               onChange={handleChange}
               className="w-full px-4 py-3.5 rounded-xl bg-[#F8FAFB] border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-mint focus:border-brand-teal transition-all"
             >
-              <option value="Complete Beginner (< 6 Months)">Complete Beginner (Less than 6 months)</option>
-              <option value="Intermediate (6 to 24 Months)">Intermediate (6 to 24 months of trading)</option>
-              <option value="Active Options Trader">Active F&O / Options Trader</option>
-              <option value="Working Professional seeking Swing Strategy">Working Professional seeking Swing Strategy</option>
+              <option value="Complete Beginner (< 6 Months)">Complete Beginner (&lt; 6 Months)</option>
+              <option value="Intermediate (6 Months - 2 Years)">Intermediate (6 Months - 2 Years)</option>
+              <option value="Experienced Trader (2+ Years)">Experienced Trader (2+ Years)</option>
+              <option value="Full-Time Professional / Prop Trader">Full-Time Professional / Prop Trader</option>
             </select>
           </div>
 
-          {/* Interest Selection */}
+          {/* Topic / Webinar Interest */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Program of Interest
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-brand-teal" /> Masterclass Topic of Interest
             </label>
             <select
               name="interest"
@@ -203,6 +246,7 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
               onChange={handleChange}
               className="w-full px-4 py-3.5 rounded-xl bg-[#F8FAFB] border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-mint focus:border-brand-teal transition-all"
             >
+              <option value="Time Cycle Trading Masterclass">Time Cycle Trading Masterclass (Price & Time Confluence)</option>
               <option value="Upcoming Saturday Live Masterclass">Upcoming Saturday Live Masterclass (Free)</option>
               <option value="Price Action & Smart Money Mentorship">Price Action & Smart Money Mentorship</option>
               <option value="Futures & Options (F&O) Architecture">Futures & Options (F&O) Architecture</option>
@@ -253,10 +297,10 @@ export default function ContactForm({ defaultInterest = "Upcoming Saturday Live 
             )}
           </button>
 
-          {/* Security & Spam disclaimer */}
+          {/* Security & Notification note */}
           <div className="flex items-center justify-center gap-2 text-slate-400 text-xs pt-1">
             <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>Encrypted transmission. No spam. Privacy guaranteed.</span>
+            <span>Encrypted transmission. Zoom link & notes sent via Email, WhatsApp & Telegram.</span>
           </div>
 
         </form>

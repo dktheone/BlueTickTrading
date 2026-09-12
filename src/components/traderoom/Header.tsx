@@ -58,8 +58,8 @@ export default function Header() {
                   <a href="#benefits" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
                     Key Advantages
                   </a>
-                  <a href="#products" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
-                    Courses & Handbooks
+                  <a href="#time-cycles" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
+                    Time Cycle Trading
                   </a>
                   <a href="#testimonials" className="block px-4 py-2 text-xs text-white/80 hover:text-[#2FFFB9] hover:bg-white/5 transition-all">
                     Student Reviews
@@ -71,8 +71,8 @@ export default function Header() {
               )}
             </div>
 
-            <a href="#products" className="hover:text-[#2FFFB9] transition-colors">
-              Courses
+            <a href="#time-cycles" className="hover:text-[#2FFFB9] transition-colors">
+              Time Cycles
             </a>
             <a href="#contact" className="hover:text-[#2FFFB9] transition-colors">
               Contact
@@ -133,11 +133,11 @@ export default function Header() {
               Services
             </a>
             <a 
-              href="#products" 
+              href="#time-cycles" 
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm text-white/90 hover:text-[#2FFFB9]"
             >
-              Courses & Programs
+              Time Cycle Trading
             </a>
             <a 
               href="#testimonials" 

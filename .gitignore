@@ -1,4 +1,4 @@
-﻿# Private Client Data & Raw Assets Archive
+# Private Client Data & Raw Assets Archive
 _raw_assets/
 .agent/
 implementation-plans/
@@ -40,3 +40,9 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Local SQLite3 Database
+data/
+*.db
+*.sqlite
+*.sqlite3

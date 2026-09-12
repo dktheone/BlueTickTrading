@@ -1,8 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import { Star, ShoppingBag, ArrowRight } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 
-export default function Products() {
+/**
+ * ARCHIVED COMPONENT — Products & Handbooks
+ * Preserved for future release with upcoming course & handbook theming.
+ * Originally located at: src/components/traderoom/Products.tsx
+ */
+export default function ProductsHandbookArchive() {
   const products = [
     {
       title: "Price Action & Technical Analysis",

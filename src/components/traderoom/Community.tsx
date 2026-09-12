@@ -4,12 +4,36 @@ import { ArrowRight, CheckCircle2, Award, UserCheck } from "lucide-react";
 
 export default function Community() {
   const providerIcons = [
-    { icon: "/images/traderoom/Icon-008.png", title: "Binance" },
-    { icon: "/images/traderoom/Icon-012-1.png", title: "MetaTrader" },
-    { icon: "/images/traderoom/Icon-010.png", title: "TradingView" },
-    { icon: "/images/traderoom/Icon-009.png", title: "Coinbase" },
-    { icon: "/images/traderoom/Icon-011-1.png", title: "Interactive Brokers" },
-    { icon: "/images/traderoom/Icon-013.png", title: "Forex.com" },
+    { 
+      title: "Binance", 
+      icon: "/images/tools/binance.svg", 
+      accent: "hover:border-[#F0B90B] hover:shadow-[#F0B90B]/20" 
+    },
+    { 
+      title: "MetaTrader", 
+      icon: "/images/tools/metatrader.png", 
+      accent: "hover:border-[#0E5866] hover:shadow-[#0E5866]/20" 
+    },
+    { 
+      title: "TradingView", 
+      icon: "/images/tools/tradingview.svg", 
+      accent: "hover:border-[#2962FF] hover:shadow-[#2962FF]/20" 
+    },
+    { 
+      title: "Coinbase", 
+      icon: "/images/tools/coinbase.svg", 
+      accent: "hover:border-[#0052FF] hover:shadow-[#0052FF]/20" 
+    },
+    { 
+      title: "Interactive Brokers", 
+      icon: "/images/tools/interactive-brokers.png", 
+      accent: "hover:border-[#D9232E] hover:shadow-[#D9232E]/20" 
+    },
+    { 
+      title: "Forex.com", 
+      icon: "/images/tools/forex-com.png", 
+      accent: "hover:border-[#14964F] hover:shadow-[#14964F]/20" 
+    },
   ];
 
   return (
@@ -85,13 +109,13 @@ export default function Community() {
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Trading tools & charting ecosystems we master
               </h4>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3.5">
                 {providerIcons.map((item, i) => (
                   <div
                     key={i}
-                    className="p-3 rounded-2xl bg-[#F8FAFB] border border-slate-200 flex flex-col items-center justify-center gap-1.5 hover:border-[#2FFFB9] transition-all"
+                    className={`p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2.5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group cursor-default ${item.accent}`}
                   >
-                    <div className="relative w-8 h-8">
+                    <div className="relative w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <Image
                         src={item.icon}
                         alt={item.title}
@@ -99,7 +123,9 @@ export default function Community() {
                         className="object-contain"
                       />
                     </div>
-                    <span className="text-[10px] font-semibold text-slate-600 text-center">{item.title}</span>
+                    <span className="text-[11px] font-bold text-slate-700 group-hover:text-slate-900 transition-colors text-center leading-tight">
+                      {item.title}
+                    </span>
                   </div>
                 ))}
               </div>
