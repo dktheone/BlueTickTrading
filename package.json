@@ -6,19 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --dir src"
+    "lint": "next lint --dir src",
+    "db:clean": "node scripts/clean-db.mjs"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
     "next": "^15.1.0",
     "nodemailer": "^10.0.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^2.5.5"
+    "react-hook-form": "^7.88.0",
+    "tailwind-merge": "^2.5.5",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

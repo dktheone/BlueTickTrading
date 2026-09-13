@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/webinar",
+        destination: "/webinars",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

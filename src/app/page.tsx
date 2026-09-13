@@ -1,6 +1,6 @@
 import Header from "@/components/traderoom/Header";
 import Hero from "@/components/traderoom/Hero";
-import Partners from "@/components/traderoom/Partners";
+import FeaturedWebinar from "@/components/traderoom/FeaturedWebinar";
 import Services from "@/components/traderoom/Services";
 import Community from "@/components/traderoom/Community";
 import Benefits from "@/components/traderoom/Benefits";
@@ -10,14 +10,17 @@ import CTA from "@/components/traderoom/CTA";
 import FAQ from "@/components/traderoom/FAQ";
 import ContactSection from "@/components/traderoom/ContactSection";
 import Footer from "@/components/traderoom/Footer";
+import { getActiveWebinar } from "@/lib/db";
 
 export default function HomePage() {
+  const activeWebinar = getActiveWebinar();
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
       <main className="flex-grow">
         <Hero />
-        <Partners />
+        <FeaturedWebinar webinar={activeWebinar} />
         <Services />
         <Community />
         <Benefits />
@@ -25,7 +28,7 @@ export default function HomePage() {
         <Testimonials />
         <CTA />
         <FAQ />
-        <ContactSection />
+        <ContactSection webinar={activeWebinar} />
       </main>
       <Footer />
     </div>

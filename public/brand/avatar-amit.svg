@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="grad-amit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E3B43"/>
+      <stop offset="100%" stop-color="#082126"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#grad-amit)"/>
+  <circle cx="64" cy="64" r="54" fill="none" stroke="#C5FF7C" stroke-width="3" stroke-dasharray="6 4" opacity="0.6"/>
+  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" fill="#C5FF7C" letter-spacing="-1">AG</text>
+</svg>

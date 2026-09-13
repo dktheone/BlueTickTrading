@@ -56,11 +56,10 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-white uppercase tracking-wider">Quick Links</h4>
             <ul className="space-y-2 text-sm text-slate-300">
               <li><Link href="/" className="hover:text-[#2FFFB9] transition-colors">Home</Link></li>
-              <li><a href="#about" className="hover:text-[#2FFFB9] transition-colors">About Amit Gupta</a></li>
-              <li><a href="#services" className="hover:text-[#2FFFB9] transition-colors">Services</a></li>
-              <li><a href="#time-cycles" className="hover:text-[#2FFFB9] transition-colors">Time Cycle Trading</a></li>
-              <li><a href="#benefits" className="hover:text-[#2FFFB9] transition-colors">Benefits</a></li>
-              <li><a href="#contact" className="hover:text-[#2FFFB9] transition-colors">Contact</a></li>
+              <li><Link href="/time-cycles" className="hover:text-[#2FFFB9] transition-colors">Time Cycles</Link></li>
+              <li><Link href="/segments" className="hover:text-[#2FFFB9] transition-colors">Market Segments</Link></li>
+              <li><Link href="/about-amit" className="hover:text-[#2FFFB9] transition-colors">About Amit Gupta</Link></li>
+              <li><Link href="/contact" className="hover:text-[#2FFFB9] transition-colors">Contact Support</Link></li>
             </ul>
           </div>
 
