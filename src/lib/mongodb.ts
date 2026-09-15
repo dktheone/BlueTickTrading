@@ -1,4 +1,4 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, MongoClientOptions } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB || "bluetick_trading";
@@ -9,6 +9,15 @@ if (!uri) {
   );
 }
 
+// Resilient options for cloud deployment environments (Hostinger / AWS / Vercel)
+const options: MongoClientOptions = {
+  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  maxPoolSize: 10,
+  minPoolSize: 1,
+};
+
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
@@ -17,18 +26,23 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
+const connectionString = uri || "mongodb://localhost:27017/bluetick_trading";
+
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  // is preserved across module reloads caused by HMR.
   if (!global._mongoClientPromise) {
-    client = new MongoClient(uri || "mongodb://localhost:27017/bluetick_trading");
+    client = new MongoClient(connectionString, options);
     global._mongoClientPromise = client.connect();
   }
   clientPromise = global._mongoClientPromise;
 } else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri || "mongodb://localhost:27017/bluetick_trading");
-  clientPromise = client.connect();
+  // In production mode, maintain a single client instance
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(connectionString, options);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
 }
 
 /**
