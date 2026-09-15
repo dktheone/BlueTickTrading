@@ -94,8 +94,9 @@ export default function FeaturedWebinar({ webinar }: FeaturedWebinarProps) {
                     src={bannerUrl}
                     alt={title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                     priority
+                    unoptimized
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   
