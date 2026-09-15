@@ -12,6 +12,9 @@ import ContactSection from "@/components/traderoom/ContactSection";
 import Footer from "@/components/traderoom/Footer";
 import { getActiveWebinar } from "@/lib/db";
 
+// Ensure HomePage dynamically fetches the active webinar from MongoDB on every request
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const activeWebinar = await getActiveWebinar();
 

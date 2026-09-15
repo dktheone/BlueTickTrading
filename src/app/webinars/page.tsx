@@ -19,6 +19,8 @@ import {
   BookOpen,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Live Trading Masterclasses & Webinars | Blue Tick Trading School",
   description:

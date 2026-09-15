@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/auth";
 import { 
   getAllWebinars, 
@@ -76,6 +77,12 @@ export async function POST(request: Request) {
     }
 
     const created = await getWebinarById(newId);
+
+    // Invalidate caches so homepage and webinar pages update immediately
+    revalidatePath("/");
+    revalidatePath("/webinars");
+    if (slug) revalidatePath(`/webinars/${slug}`);
+
     return NextResponse.json({
       success: true,
       message: "Webinar scheduled successfully.",
@@ -135,6 +142,13 @@ export async function PATCH(request: Request) {
     }
 
     const updated = await getWebinarById(Number(id));
+
+    // Invalidate caches so homepage and webinar pages update immediately
+    revalidatePath("/");
+    revalidatePath("/webinars");
+    if (updated?.slug) revalidatePath(`/webinars/${updated.slug}`);
+    if (slug && slug !== updated?.slug) revalidatePath(`/webinars/${slug}`);
+
     return NextResponse.json({
       success: true,
       message: "Webinar updated successfully.",
@@ -164,6 +178,10 @@ export async function DELETE(request: Request) {
     if (!ok) {
       return NextResponse.json({ error: "Failed to delete webinar." }, { status: 500 });
     }
+
+    // Invalidate caches
+    revalidatePath("/");
+    revalidatePath("/webinars");
 
     return NextResponse.json({ success: true, message: "Webinar deleted successfully." });
   } catch (err) {
