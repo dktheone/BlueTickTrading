@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
-    const admin = getAdminById(session.id);
+    const admin = await getAdminById(session.id);
     if (!admin) {
       return NextResponse.json({ error: "Admin profile not found." }, { status: 404 });
     }
@@ -46,7 +46,7 @@ export async function PATCH(request: Request) {
     const body = await request.json();
     const { avatar_url, bio, designation, tg_chat_id } = body;
 
-    const ok = updateAdminProfile(session.id, {
+    const ok = await updateAdminProfile(session.id, {
       avatar_url: avatar_url !== undefined ? avatar_url.trim() : undefined,
       bio: bio !== undefined ? bio.trim() : undefined,
       designation: designation !== undefined ? designation.trim() : undefined,
@@ -57,7 +57,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Failed to update profile." }, { status: 500 });
     }
 
-    const updated = getAdminById(session.id);
+    const updated = await getAdminById(session.id);
     const sanitizedProfile = updated
       ? {
           id: updated.id,

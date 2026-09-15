@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Username/Mobile and password are required." }, { status: 400 });
     }
 
-    const verification = verifyPasswordLogin(identifier, password);
+    const verification = await verifyPasswordLogin(identifier, password);
     if (!verification.success || !verification.token) {
       return NextResponse.json({ error: verification.error || "Invalid credentials." }, { status: 401 });
     }

@@ -71,36 +71,36 @@ export async function POST(req: NextRequest) {
       webinar_id: webinarId ? Number(webinarId) : null,
     };
 
-    // 4. Store entry permanently into SQLite3 database
+    // 4. Store entry permanently into MongoDB Atlas database
     let storedRecordId: number | bigint | null = null;
     try {
       if (webinarId) {
-        // Webinar Registrant -> insert into leads table with webinar_id & status: 'New'
-        const dbResult = insertLead(leadPayload);
+        // Webinar Registrant -> insert into leads collection with webinar_id & status: 'New'
+        const dbResult = await insertLead(leadPayload);
         storedRecordId = dbResult.id;
-        console.log(`[SQLite3 Database] Webinar Lead persisted successfully with ID #${storedRecordId}`);
+        console.log(`[MongoDB Atlas] Webinar Lead persisted successfully with ID #${storedRecordId}`);
       } else {
         // General Inquirer -> insert into users_master + leads_contact
-        const userRes = findOrCreateUser({
+        const userRes = await findOrCreateUser({
           name: leadPayload.name,
           email: leadPayload.email,
           phone: leadPayload.phone,
           experience: leadPayload.experience,
         });
-        const contactRes = insertContactLead({
+        const contactRes = await insertContactLead({
           userId: userRes.id,
           subjectTopic: leadPayload.interest,
           message: leadPayload.message,
           sourceUrl: "/contact",
           ipAddress: clientIp,
         });
-        // Also persist in fallback leads table so it exists everywhere
-        const fallbackLead = insertLead(leadPayload);
+        // Also persist in fallback leads collection so it exists everywhere
+        const fallbackLead = await insertLead(leadPayload);
         storedRecordId = contactRes.id || fallbackLead.id;
-        console.log(`[SQLite3 Database] General Contact Inquiry persisted into leads_contact #${storedRecordId}`);
+        console.log(`[MongoDB Atlas] General Contact Inquiry persisted into leads_contact #${storedRecordId}`);
       }
     } catch (dbErr) {
-      console.error("[SQLite3 Database Error] Failed to persist lead:", dbErr);
+      console.error("[MongoDB Atlas Error] Failed to persist lead:", dbErr);
     }
 
     // 4b. If webinarId is present, register in users_master, webinar_registrations, and prepare calendar invite
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
 
     if (webinarId) {
       try {
-        const regRes = registerUserForWebinar({
+        const regRes = await registerUserForWebinar({
           webinarId: Number(webinarId),
           name: leadPayload.name,
           email: leadPayload.email,
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
         });
         console.log(`[Webinar Registration Flow]: Registered user for webinar #${webinarId}`, regRes);
 
-        const w = getWebinarById(Number(webinarId));
+        const w = await getWebinarById(Number(webinarId));
         if (w) {
           webinarEvent = {
             id: w.id,

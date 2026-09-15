@@ -25,9 +25,9 @@ export const metadata = {
     "Join Amit Gupta for free, high-impact live masterclasses on Time Cycle Trading, BankNifty price action, and MCX Commodities turn date forecasting.",
 };
 
-export default function WebinarsPage() {
-  const publishedWebinars = getPublishedWebinars();
-  const activeWebinar = getActiveWebinar() || publishedWebinars[0] || null;
+export default async function WebinarsPage() {
+  const publishedWebinars = await getPublishedWebinars();
+  const activeWebinar = (await getActiveWebinar()) || publishedWebinars[0] || null;
 
   const title =
     activeWebinar?.title ||

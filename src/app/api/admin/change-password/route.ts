@@ -21,13 +21,13 @@ export async function POST(request: Request) {
     // Case 1: Password setup immediately following OTP verification or with an active session
     if (session) {
       // If user already has a password and wants to change it, an OTP is required as a 2FA step
-      const currentRecord = getAdminById(session.id);
+      const currentRecord = await getAdminById(session.id);
       if (!currentRecord) {
         return NextResponse.json({ error: "Admin not found." }, { status: 404 });
       }
 
       if (currentRecord.hashed_password && otp) {
-        const verifyOtpResult = verifyOtpAndCreateSession(currentRecord.username, otp);
+        const verifyOtpResult = await verifyOtpAndCreateSession(currentRecord.username, otp);
         if (!verifyOtpResult.success) {
           return NextResponse.json(
             { error: verifyOtpResult.error || "Invalid OTP code for password update." },
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         );
       }
 
-      const verifyOtpResult = verifyOtpAndCreateSession(identifier, otp);
+      const verifyOtpResult = await verifyOtpAndCreateSession(identifier, otp);
       if (!verifyOtpResult.success) {
         return NextResponse.json(
           { error: verifyOtpResult.error || "OTP verification failed." },
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 
       sessionToken = verifyOtpResult.token || null;
 
-      const admin = getAdminByUsernameOrMobile(identifier);
+      const admin = await getAdminByUsernameOrMobile(identifier);
       if (!admin) {
         return NextResponse.json({ error: "Admin record not found." }, { status: 404 });
       }
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     // Hash the password with native salted scrypt
     const hashed = hashPassword(newPassword);
-    const success = updateAdminPassword(targetAdminId, hashed);
+    const success = await updateAdminPassword(targetAdminId, hashed);
 
     if (!success) {
       return NextResponse.json({ error: "Failed to save password." }, { status: 500 });

@@ -1,6 +1,8 @@
-import { createRequire } from "module";
-import path from "path";
-import fs from "fs";
+import { getMongoDb } from "./mongodb";
+
+// ==============================================================================
+// TYPES & INTERFACES
+// ==============================================================================
 
 export interface LeadRecord {
   id?: number;
@@ -16,210 +18,6 @@ export interface LeadRecord {
   webinar_id?: number | null;
 }
 
-let dbInstance: any = null;
-let isNodeSqliteSupported = false;
-
-// Attempt to load node:sqlite safely (supported in Node.js >= 22.5.0)
-try {
-  const require = createRequire(import.meta.url);
-  const sqliteModule = require("node:sqlite");
-  if (sqliteModule && sqliteModule.DatabaseSync) {
-    dbInstance = sqliteModule.DatabaseSync;
-    isNodeSqliteSupported = true;
-  }
-} catch {
-  isNodeSqliteSupported = false;
-  console.warn(
-    "[SQLite Notice] Native node:sqlite requires Node.js >= 22.5.0. Running in file-based JSON persistence mode (data/leads.json)."
-  );
-}
-
-let activeDbInstance: any = null;
-
-/**
- * Returns a singleton SQLite3 database instance using Node.js's built-in node:sqlite module
- * when available on Node >= 22.5.0.
- */
-export function getDb(): any {
-  if (!isNodeSqliteSupported) {
-    return null;
-  }
-
-  if (!activeDbInstance) {
-    const dbDir = path.join(process.cwd(), "data");
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
-
-    const dbPath = process.env.SQLITE_DB_PATH || path.join(dbDir, "leads.db");
-    activeDbInstance = new dbInstance(dbPath);
-    activeDbInstance.exec("PRAGMA journal_mode = WAL;");
-    activeDbInstance.exec("PRAGMA busy_timeout = 10000;");
-
-    // Initialize Schema from schema.sql if exists, with backward compatible fallback
-    const schemaFile = path.join(process.cwd(), "src", "lib", "schema.sql");
-    if (fs.existsSync(schemaFile)) {
-      const schemaSql = fs.readFileSync(schemaFile, "utf-8");
-      activeDbInstance.exec(schemaSql);
-    } else {
-      activeDbInstance.exec(`
-        CREATE TABLE IF NOT EXISTS leads (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT NOT NULL,
-          experience TEXT,
-          interest TEXT,
-          message TEXT,
-          ip_address TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-        CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
-        CREATE INDEX IF NOT EXISTS idx_leads_phone ON leads(phone);
-        CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
-      `);
-    }
-
-    // Safe migration: Add status & webinar_id to leads table if not present
-    try {
-      activeDbInstance.exec(`ALTER TABLE leads ADD COLUMN status TEXT DEFAULT 'New';`);
-    } catch {
-      // Column already exists
-    }
-    try {
-      activeDbInstance.exec(`ALTER TABLE leads ADD COLUMN webinar_id INTEGER;`);
-    } catch {
-      // Column already exists
-    }
-  }
-
-  return activeDbInstance;
-}
-
-function getJsonFilePath(): string {
-  const dbDir = path.join(process.cwd(), "data");
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
-  return path.join(dbDir, "leads.json");
-}
-
-function readJsonLeads(): LeadRecord[] {
-  try {
-    const filePath = getJsonFilePath();
-    if (!fs.existsSync(filePath)) return [];
-    const content = fs.readFileSync(filePath, "utf-8");
-    return JSON.parse(content || "[]");
-  } catch (e) {
-    console.error("[JSON Store Error] Failed to read leads.json:", e);
-    return [];
-  }
-}
-
-function writeJsonLeads(leads: LeadRecord[]): void {
-  try {
-    const filePath = getJsonFilePath();
-    fs.writeFileSync(filePath, JSON.stringify(leads, null, 2), "utf-8");
-  } catch (e) {
-    console.error("[JSON Store Error] Failed to write leads.json:", e);
-  }
-}
-
-/**
- * Inserts a new webinar registration or contact lead into SQLite3 (or JSON fallback).
- */
-export function insertLead(lead: Omit<LeadRecord, "id" | "created_at">): { id: number | bigint; success: boolean } {
-  const db = getDb();
-  const status = lead.status || "New";
-
-  // Mode 1: Native SQLite3 (Node.js >= 22.5.0)
-  if (db) {
-    try {
-      const stmt = db.prepare(`
-        INSERT INTO leads (name, email, phone, experience, interest, message, ip_address, status, webinar_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      const info = stmt.run(
-        lead.name,
-        lead.email,
-        lead.phone,
-        lead.experience || null,
-        lead.interest || null,
-        lead.message || null,
-        lead.ip_address || null,
-        status,
-        lead.webinar_id || null
-      );
-
-      return { id: info.lastInsertRowid, success: true };
-    } catch (error) {
-      console.error("[Node SQLite Error] Failed to insert lead record:", error);
-      throw error;
-    }
-  }
-
-  // Mode 2: JSON Persistence Fallback (Node.js < 22.5.0 on Hostinger)
-  try {
-    const leads = readJsonLeads();
-    const newId = leads.length > 0 ? (leads[leads.length - 1].id || 0) + 1 : 1;
-    const newRecord: LeadRecord = {
-      ...lead,
-      id: newId,
-      status,
-      created_at: new Date().toISOString(),
-    };
-    leads.push(newRecord);
-    writeJsonLeads(leads);
-    console.log(`[JSON Store] Persisted lead #${newId} to data/leads.json`);
-    return { id: newId, success: true };
-  } catch (error) {
-    console.error("[JSON Store Error] Failed to insert lead record:", error);
-    throw error;
-  }
-}
-
-/**
- * Retrieves all stored leads ordered by newest first.
- */
-export function getAllLeads(limit = 500): LeadRecord[] {
-  const db = getDb();
-  if (db) {
-    try {
-      const stmt = db.prepare(`
-        SELECT id, name, email, phone, experience, interest, message, ip_address, created_at, 
-               COALESCE(status, 'New') as status, webinar_id
-        FROM leads
-        ORDER BY id DESC
-        LIMIT ?
-      `);
-      const rows = stmt.all(limit) as any[];
-      return rows.map((r) => ({ ...r, status: r.status || "New" })) as LeadRecord[];
-    } catch (error) {
-      console.error("[Node SQLite Error] Failed to fetch leads:", error);
-      return [];
-    }
-  }
-
-  const leads = readJsonLeads();
-  return leads.slice(-limit).reverse().map((l) => ({ ...l, status: l.status || "New" }));
-}
-
-/**
- * Updates the response status of a webinar lead ('New' | 'Responded').
- */
-export function updateLeadStatus(id: number, status: string): boolean {
-  const db = getDb();
-  if (!db) return false;
-  try {
-    db.prepare(`UPDATE leads SET status = ? WHERE id = ?`).run(status, id);
-    return true;
-  } catch (err) {
-    console.error("[DB Update Lead Status Error]:", err);
-    return false;
-  }
-}
-
 export interface ContactInquiryRecord {
   id: number;
   user_id: number;
@@ -232,133 +30,6 @@ export interface ContactInquiryRecord {
   status: "New" | "Responded" | string;
   ip_address?: string | null;
   created_at: string;
-}
-
-/**
- * Retrieves all general contact desk inquiries joined with users_master.
- */
-export function getAllContactInquiries(limit = 500): ContactInquiryRecord[] {
-  const db = getDb();
-  if (!db) return [];
-
-  try {
-    const stmt = db.prepare(`
-      SELECT 
-        c.id, c.user_id, u.name, u.email, u.phone,
-        c.subject_topic, c.message, c.source_url, 
-        COALESCE(c.status, 'New') as status,
-        c.ip_address, c.created_at
-      FROM leads_contact c
-      JOIN users_master u ON c.user_id = u.id
-      ORDER BY c.id DESC
-      LIMIT ?
-    `);
-    const rows = stmt.all(limit) as any[];
-    return rows.map((r) => ({ ...r })) as ContactInquiryRecord[];
-  } catch (err) {
-    console.error("[DB Get Contact Inquiries Error]:", err);
-    return [];
-  }
-}
-
-/**
- * Updates the response status of a contact inquiry ('New' | 'Responded').
- */
-export function updateContactInquiryStatus(id: number, status: string): boolean {
-  const db = getDb();
-  if (!db) return false;
-  try {
-    db.prepare(`UPDATE leads_contact SET status = ? WHERE id = ?`).run(status, id);
-    return true;
-  } catch (err) {
-    console.error("[DB Update Contact Status Error]:", err);
-    return false;
-  }
-}
-
-/**
- * Returns total count of registered leads.
- */
-export function getLeadsCount(): number {
-  const db = getDb();
-  if (db) {
-    try {
-      const row = db.prepare(`SELECT COUNT(*) as count FROM leads`).get() as { count: number };
-      return row?.count || 0;
-    } catch (error) {
-      console.error("[Node SQLite Error] Failed to get count:", error);
-      return 0;
-    }
-  }
-
-  const leads = readJsonLeads();
-  return leads.length;
-}
-
-/**
- * Stage 3 Relational Helper: Finds or creates a unique record in users_master
- * Composite Unique Key: (phone, email)
- */
-export function findOrCreateUser(payload: { name: string; phone: string; email: string; experience?: string; city?: string }): { id: number; isNew: boolean } {
-  const db = getDb();
-  if (!db) {
-    return { id: 1, isNew: true };
-  }
-
-  const existing = db.prepare("SELECT id FROM users_master WHERE phone = ? AND email = ?").get(payload.phone, payload.email) as { id: number } | undefined;
-  if (existing) {
-    return { id: existing.id, isNew: false };
-  }
-
-  const stmt = db.prepare("INSERT INTO users_master (name, phone, email, experience_level, city) VALUES (?, ?, ?, ?, ?)");
-  const info = stmt.run(payload.name, payload.phone, payload.email, payload.experience || null, payload.city || null);
-  return { id: Number(info.lastInsertRowid), isNew: true };
-}
-
-/**
- * Stage 3 Relational Helper: Records DPDP Act consent for a user
- */
-export function recordConsent(payload: { userId: number; consentGiven?: boolean; allowWhatsApp?: boolean; allowEmail?: boolean; allowTelegram?: boolean; ip?: string; userAgent?: string }): void {
-  const db = getDb();
-  if (!db) return;
-
-  const stmt = db.prepare(`
-    INSERT INTO consent_status (user_id, consent_given, allow_whatsapp, allow_email, allow_telegram, ip_address, user_agent)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(user_id) DO UPDATE SET
-      consent_given = excluded.consent_given,
-      allow_whatsapp = excluded.allow_whatsapp,
-      allow_email = excluded.allow_email,
-      allow_telegram = excluded.allow_telegram,
-      consent_timestamp = CURRENT_TIMESTAMP,
-      ip_address = excluded.ip_address,
-      user_agent = excluded.user_agent
-  `);
-
-  stmt.run(
-    payload.userId,
-    payload.consentGiven ?? 1 ? 1 : 0,
-    payload.allowWhatsApp ?? 1 ? 1 : 0,
-    payload.allowEmail ?? 1 ? 1 : 0,
-    payload.allowTelegram ?? 1 ? 1 : 0,
-    payload.ip || null,
-    payload.userAgent || null
-  );
-}
-
-/**
- * Stage 3 Relational Helper: Saves general inquiry from /contact into leads_contact
- */
-export function insertContactLead(payload: { userId: number; subjectTopic: string; message: string; sourceUrl?: string; ipAddress?: string }): { id: number } {
-  const db = getDb();
-  if (!db) return { id: 1 };
-
-  const stmt = db.prepare(`
-    INSERT INTO leads_contact (user_id, subject_topic, message, source_url, ip_address)
-    VALUES (?, ?, ?, ?, ?)
-  `);
-  const info = stmt.run(payload.userId, payload.subjectTopic, payload.message, payload.sourceUrl || "/contact", payload.ipAddress || null);
-  return { id: Number(info.lastInsertRowid) };
 }
 
 export interface AdminUserRecord {
@@ -377,209 +48,6 @@ export interface AdminUserRecord {
   bio?: string | null;
   designation?: string | null;
 }
-
-/**
- * Normalizes phone numbers for uniform comparison (+91-9140494689 -> 9140494689 or +919140494689)
- */
-export function normalizePhone(phone: string): string {
-  const digits = phone.replace(/[^0-9]/g, "");
-  if (digits.length === 10) return `+91${digits}`;
-  if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
-  return phone.trim();
-}
-
-/**
- * Retrieves an admin user by username or phone number, joined with their profile.
- */
-export function getAdminByUsernameOrMobile(identifier: string): AdminUserRecord | null {
-  const db = getDb();
-  if (!db) return null;
-
-  const clean = identifier.trim().toLowerCase();
-  const normalizedPhone = normalizePhone(identifier);
-
-  try {
-    const stmt = db.prepare(`
-      SELECT 
-        u.id, u.username, u.display_name, u.role, u.mobile, u.tg_chat_id,
-        u.hashed_password, u.must_change_password, u.is_active, u.created_at, u.updated_at,
-        p.avatar_url, p.bio, p.designation
-      FROM admin_users u
-      LEFT JOIN admin_user_profile p ON u.id = p.admin_user_id
-      WHERE LOWER(u.username) = ? OR u.mobile = ? OR u.mobile = ?
-      LIMIT 1
-    `);
-
-    const row = stmt.get(clean, clean, normalizedPhone) as unknown as AdminUserRecord | undefined;
-    return row ? { ...row } : null;
-  } catch (err) {
-    console.error("[DB Admin Query Error]:", err);
-    return null;
-  }
-}
-
-/**
- * Retrieves full admin profile by user ID.
- */
-export function getAdminById(id: number): AdminUserRecord | null {
-  const db = getDb();
-  if (!db) return null;
-
-  try {
-    const stmt = db.prepare(`
-      SELECT 
-        u.id, u.username, u.display_name, u.role, u.mobile, u.tg_chat_id,
-        u.hashed_password, u.must_change_password, u.is_active, u.created_at, u.updated_at,
-        p.avatar_url, p.bio, p.designation
-      FROM admin_users u
-      LEFT JOIN admin_user_profile p ON u.id = p.admin_user_id
-      WHERE u.id = ?
-      LIMIT 1
-    `);
-
-    const row = stmt.get(id) as unknown as AdminUserRecord | undefined;
-    return row ? { ...row } : null;
-  } catch (err) {
-    console.error("[DB Admin Query By ID Error]:", err);
-    return null;
-  }
-}
-
-/**
- * Updates an admin's profile (avatar, bio, designation).
- */
-export function updateAdminProfile(
-  adminUserId: number,
-  updates: { avatar_url?: string; bio?: string; designation?: string; tg_chat_id?: string }
-): boolean {
-  const db = getDb();
-  if (!db) return false;
-
-  try {
-    // If tg_chat_id is provided, update admin_users table
-    if (updates.tg_chat_id !== undefined) {
-      db.prepare("UPDATE admin_users SET tg_chat_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(
-        updates.tg_chat_id || null,
-        adminUserId
-      );
-    }
-
-    // Upsert into admin_user_profile
-    const existing = db.prepare("SELECT id FROM admin_user_profile WHERE admin_user_id = ?").get(adminUserId);
-    if (existing) {
-      db.prepare(`
-        UPDATE admin_user_profile
-        SET avatar_url = COALESCE(?, avatar_url),
-            bio = COALESCE(?, bio),
-            designation = COALESCE(?, designation),
-            updated_at = CURRENT_TIMESTAMP
-        WHERE admin_user_id = ?
-      `).run(
-        updates.avatar_url ?? null,
-        updates.bio ?? null,
-        updates.designation ?? null,
-        adminUserId
-      );
-    } else {
-      db.prepare(`
-        INSERT INTO admin_user_profile (admin_user_id, avatar_url, bio, designation)
-        VALUES (?, ?, ?, ?)
-      `).run(
-        adminUserId,
-        updates.avatar_url || null,
-        updates.bio || null,
-        updates.designation || null
-      );
-    }
-
-    return true;
-  } catch (err) {
-    console.error("[DB Admin Profile Update Error]:", err);
-    return false;
-  }
-}
-
-/**
- * Updates an admin user's hashed password and clears must_change_password flag.
- */
-export function updateAdminPassword(adminUserId: number, hashedPassword: string): boolean {
-  const db = getDb();
-  if (!db) return false;
-
-  try {
-    db.prepare(`
-      UPDATE admin_users
-      SET hashed_password = ?, must_change_password = 0, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `).run(hashedPassword, adminUserId);
-    return true;
-  } catch (err) {
-    console.error("[DB Admin Password Update Error]:", err);
-    return false;
-  }
-}
-
-/**
- * Saves or updates an active OTP challenge in SQLite so it survives worker processes.
- */
-export function setAdminOtpChallenge(userId: number, otp: string, expiresAt: number, username: string): boolean {
-  const db = getDb();
-  if (!db) return false;
-
-  try {
-    db.prepare(`
-      INSERT INTO admin_otp_challenges (user_id, otp, expires_at, username)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(user_id) DO UPDATE SET
-        otp = excluded.otp,
-        expires_at = excluded.expires_at,
-        username = excluded.username,
-        created_at = CURRENT_TIMESTAMP
-    `).run(userId, otp, expiresAt, username);
-    return true;
-  } catch (err) {
-    console.error("[DB Set Admin OTP Error]:", err);
-    return false;
-  }
-}
-
-/**
- * Retrieves an active OTP challenge for a user.
- */
-export function getAdminOtpChallenge(userId: number): { otp: string; expires_at: number; username: string } | null {
-  const db = getDb();
-  if (!db) return null;
-
-  try {
-    const row = db.prepare(`
-      SELECT otp, expires_at, username FROM admin_otp_challenges WHERE user_id = ?
-    `).get(userId) as { otp: string; expires_at: number; username: string } | undefined;
-    return row ? { ...row } : null;
-  } catch (err) {
-    console.error("[DB Get Admin OTP Error]:", err);
-    return null;
-  }
-}
-
-/**
- * Deletes an active OTP challenge for a user after use or expiry.
- */
-export function deleteAdminOtpChallenge(userId: number): boolean {
-  const db = getDb();
-  if (!db) return false;
-
-  try {
-    db.prepare(`DELETE FROM admin_otp_challenges WHERE user_id = ?`).run(userId);
-    return true;
-  } catch (err) {
-    console.error("[DB Delete Admin OTP Error]:", err);
-    return false;
-  }
-}
-
-// ==============================================================================
-// WEBINAR MANAGEMENT FUNCTIONS
-// ==============================================================================
 
 export interface WebinarRecord {
   id: number;
@@ -603,29 +71,579 @@ export interface WebinarRecord {
   registrant_count?: number;
 }
 
+// ==============================================================================
+// HELPER: Auto-increment Sequence Generator for MongoDB
+// ==============================================================================
+async function getNextSequence(sequenceName: string): Promise<number> {
+  const db = await getMongoDb();
+  const counterCol = db.collection("counters");
+  const result = await counterCol.findOneAndUpdate(
+    { _id: sequenceName as any },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: "after" }
+  );
+  return result?.seq ?? Date.now();
+}
+
+/**
+ * Normalizes phone numbers for uniform comparison (+91-9140494689 -> 9140494689 or +919140494689)
+ */
+export function normalizePhone(phone: string): string {
+  const digits = phone.replace(/[^0-9]/g, "");
+  if (digits.length === 10) return `+91${digits}`;
+  if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
+  return phone.trim();
+}
+
+// ==============================================================================
+// LEADS (Webinar & Landing Page Leads)
+// ==============================================================================
+
+/**
+ * Inserts a new webinar registration or contact lead into MongoDB Atlas.
+ */
+export async function insertLead(
+  lead: Omit<LeadRecord, "id" | "created_at">
+): Promise<{ id: number; success: boolean }> {
+  try {
+    const db = await getMongoDb();
+    const nextId = await getNextSequence("leads");
+    const status = lead.status || "New";
+    const now = new Date().toISOString();
+
+    const doc: LeadRecord = {
+      id: nextId,
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      experience: lead.experience || undefined,
+      interest: lead.interest || undefined,
+      message: lead.message || undefined,
+      ip_address: lead.ip_address || undefined,
+      status,
+      webinar_id: lead.webinar_id ?? null,
+      created_at: now,
+    };
+
+    await db.collection("leads").insertOne(doc);
+    return { id: nextId, success: true };
+  } catch (error) {
+    console.error("[MongoDB Error] Failed to insert lead record:", error);
+    throw error;
+  }
+}
+
+/**
+ * Retrieves all stored leads ordered by newest first.
+ */
+export async function getAllLeads(limit = 500): Promise<LeadRecord[]> {
+  try {
+    const db = await getMongoDb();
+    const docs = await db
+      .collection("leads")
+      .find({})
+      .sort({ id: -1, created_at: -1 })
+      .limit(limit)
+      .toArray();
+
+    return docs.map((d) => ({
+      id: d.id,
+      name: d.name,
+      email: d.email,
+      phone: d.phone,
+      experience: d.experience,
+      interest: d.interest,
+      message: d.message,
+      ip_address: d.ip_address,
+      status: d.status || "New",
+      webinar_id: d.webinar_id,
+      created_at: d.created_at,
+    }));
+  } catch (error) {
+    console.error("[MongoDB Error] Failed to fetch leads:", error);
+    return [];
+  }
+}
+
+/**
+ * Updates the response status of a webinar lead ('New' | 'Responded').
+ */
+export async function updateLeadStatus(id: number, status: string): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    const res = await db.collection("leads").updateOne(
+      { id: Number(id) },
+      { $set: { status, updated_at: new Date().toISOString() } }
+    );
+    return res.matchedCount > 0;
+  } catch (err) {
+    console.error("[MongoDB Update Lead Status Error]:", err);
+    return false;
+  }
+}
+
+/**
+ * Returns total count of registered leads.
+ */
+export async function getLeadsCount(): Promise<number> {
+  try {
+    const db = await getMongoDb();
+    return await db.collection("leads").countDocuments();
+  } catch (error) {
+    console.error("[MongoDB Error] Failed to get count:", error);
+    return 0;
+  }
+}
+
+// ==============================================================================
+// CONTACT INQUIRIES & MASTER USERS
+// ==============================================================================
+
+/**
+ * Retrieves all general contact desk inquiries joined with users_master.
+ */
+export async function getAllContactInquiries(limit = 500): Promise<ContactInquiryRecord[]> {
+  try {
+    const db = await getMongoDb();
+    const inquiries = await db
+      .collection("leads_contact")
+      .aggregate([
+        { $sort: { id: -1 } },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "users_master",
+            localField: "user_id",
+            foreignField: "id",
+            as: "user",
+          },
+        },
+        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+      ])
+      .toArray();
+
+    return inquiries.map((item: any) => ({
+      id: item.id,
+      user_id: item.user_id,
+      name: item.user?.name || item.name || "Anonymous",
+      email: item.user?.email || item.email || "",
+      phone: item.user?.phone || item.phone || "",
+      subject_topic: item.subject_topic,
+      message: item.message,
+      source_url: item.source_url || "/contact",
+      status: item.status || "New",
+      ip_address: item.ip_address || null,
+      created_at: item.created_at,
+    }));
+  } catch (err) {
+    console.error("[MongoDB Get Contact Inquiries Error]:", err);
+    return [];
+  }
+}
+
+/**
+ * Updates the response status of a contact inquiry ('New' | 'Responded').
+ */
+export async function updateContactInquiryStatus(id: number, status: string): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    const res = await db.collection("leads_contact").updateOne(
+      { id: Number(id) },
+      { $set: { status, updated_at: new Date().toISOString() } }
+    );
+    return res.matchedCount > 0;
+  } catch (err) {
+    console.error("[MongoDB Update Contact Status Error]:", err);
+    return false;
+  }
+}
+
+/**
+ * Finds or creates a unique record in users_master.
+ * Composite Unique Key: (phone, email)
+ */
+export async function findOrCreateUser(payload: {
+  name: string;
+  phone: string;
+  email: string;
+  experience?: string;
+  city?: string;
+}): Promise<{ id: number; isNew: boolean }> {
+  try {
+    const db = await getMongoDb();
+    const usersCol = db.collection("users_master");
+    const existing = await usersCol.findOne({
+      phone: payload.phone.trim(),
+      email: payload.email.trim().toLowerCase(),
+    });
+
+    if (existing) {
+      return { id: existing.id, isNew: false };
+    }
+
+    const nextId = await getNextSequence("users_master");
+    const now = new Date().toISOString();
+    await usersCol.insertOne({
+      id: nextId,
+      name: payload.name.trim(),
+      phone: payload.phone.trim(),
+      email: payload.email.trim().toLowerCase(),
+      experience_level: payload.experience || null,
+      city: payload.city || null,
+      created_at: now,
+      updated_at: now,
+    });
+
+    return { id: nextId, isNew: true };
+  } catch (error) {
+    console.error("[MongoDB FindOrCreateUser Error]:", error);
+    return { id: 1, isNew: false };
+  }
+}
+
+/**
+ * Records DPDP Act consent for a user.
+ */
+export async function recordConsent(payload: {
+  userId: number;
+  consentGiven?: boolean;
+  allowWhatsApp?: boolean;
+  allowEmail?: boolean;
+  allowTelegram?: boolean;
+  ip?: string;
+  userAgent?: string;
+}): Promise<void> {
+  try {
+    const db = await getMongoDb();
+    const consentCol = db.collection("consent_status");
+    await consentCol.updateOne(
+      { user_id: Number(payload.userId) },
+      {
+        $set: {
+          user_id: Number(payload.userId),
+          consent_given: payload.consentGiven ?? true ? 1 : 0,
+          allow_whatsapp: payload.allowWhatsApp ?? true ? 1 : 0,
+          allow_email: payload.allowEmail ?? true ? 1 : 0,
+          allow_telegram: payload.allowTelegram ?? true ? 1 : 0,
+          consent_timestamp: new Date().toISOString(),
+          ip_address: payload.ip || null,
+          user_agent: payload.userAgent || null,
+        },
+      },
+      { upsert: true }
+    );
+  } catch (error) {
+    console.error("[MongoDB RecordConsent Error]:", error);
+  }
+}
+
+/**
+ * Saves general inquiry from /contact into leads_contact.
+ */
+export async function insertContactLead(payload: {
+  userId: number;
+  subjectTopic: string;
+  message: string;
+  sourceUrl?: string;
+  ipAddress?: string;
+}): Promise<{ id: number }> {
+  try {
+    const db = await getMongoDb();
+    const nextId = await getNextSequence("leads_contact");
+    const now = new Date().toISOString();
+
+    await db.collection("leads_contact").insertOne({
+      id: nextId,
+      user_id: Number(payload.userId),
+      subject_topic: payload.subjectTopic,
+      message: payload.message,
+      source_url: payload.sourceUrl || "/contact",
+      ip_address: payload.ipAddress || null,
+      status: "New",
+      created_at: now,
+    });
+
+    return { id: nextId };
+  } catch (error) {
+    console.error("[MongoDB InsertContactLead Error]:", error);
+    return { id: 1 };
+  }
+}
+
+// ==============================================================================
+// ADMIN ACCOUNTS & AUTHENTICATION
+// ==============================================================================
+
+/**
+ * Retrieves an admin user by username or phone number, joined with their profile.
+ */
+export async function getAdminByUsernameOrMobile(identifier: string): Promise<AdminUserRecord | null> {
+  try {
+    const db = await getMongoDb();
+    const clean = identifier.trim().toLowerCase();
+    const normalizedPhone = normalizePhone(identifier);
+
+    const user = await db.collection("admin_users").findOne({
+      $or: [
+        { username: clean },
+        { mobile: clean },
+        { mobile: normalizedPhone },
+        { mobile: identifier.trim() },
+      ],
+    });
+
+    if (!user) return null;
+
+    const profile = await db.collection("admin_user_profile").findOne({
+      admin_user_id: user.id,
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      display_name: user.display_name,
+      role: user.role,
+      mobile: user.mobile,
+      tg_chat_id: user.tg_chat_id || null,
+      hashed_password: user.hashed_password || null,
+      must_change_password: user.must_change_password ?? 1,
+      is_active: user.is_active ?? 1,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      avatar_url: profile?.avatar_url || null,
+      bio: profile?.bio || null,
+      designation: profile?.designation || null,
+    };
+  } catch (err) {
+    console.error("[MongoDB Admin Query Error]:", err);
+    return null;
+  }
+}
+
+/**
+ * Retrieves full admin profile by user ID.
+ */
+export async function getAdminById(id: number): Promise<AdminUserRecord | null> {
+  try {
+    const db = await getMongoDb();
+    const user = await db.collection("admin_users").findOne({ id: Number(id) });
+    if (!user) return null;
+
+    const profile = await db.collection("admin_user_profile").findOne({
+      admin_user_id: user.id,
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      display_name: user.display_name,
+      role: user.role,
+      mobile: user.mobile,
+      tg_chat_id: user.tg_chat_id || null,
+      hashed_password: user.hashed_password || null,
+      must_change_password: user.must_change_password ?? 1,
+      is_active: user.is_active ?? 1,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      avatar_url: profile?.avatar_url || null,
+      bio: profile?.bio || null,
+      designation: profile?.designation || null,
+    };
+  } catch (err) {
+    console.error("[MongoDB Admin Query By ID Error]:", err);
+    return null;
+  }
+}
+
+/**
+ * Updates an admin's profile (avatar, bio, designation, tg_chat_id).
+ */
+export async function updateAdminProfile(
+  adminUserId: number,
+  updates: { avatar_url?: string; bio?: string; designation?: string; tg_chat_id?: string }
+): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    const now = new Date().toISOString();
+
+    if (updates.tg_chat_id !== undefined) {
+      await db.collection("admin_users").updateOne(
+        { id: Number(adminUserId) },
+        { $set: { tg_chat_id: updates.tg_chat_id || null, updated_at: now } }
+      );
+    }
+
+    const profileSet: Record<string, any> = { updated_at: now };
+    if (updates.avatar_url !== undefined) profileSet.avatar_url = updates.avatar_url || null;
+    if (updates.bio !== undefined) profileSet.bio = updates.bio || null;
+    if (updates.designation !== undefined) profileSet.designation = updates.designation || null;
+
+    await db.collection("admin_user_profile").updateOne(
+      { admin_user_id: Number(adminUserId) },
+      { $set: profileSet },
+      { upsert: true }
+    );
+
+    return true;
+  } catch (err) {
+    console.error("[MongoDB Admin Profile Update Error]:", err);
+    return false;
+  }
+}
+
+/**
+ * Updates an admin user's hashed password and clears must_change_password flag.
+ */
+export async function updateAdminPassword(adminUserId: number, hashedPassword: string): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    const now = new Date().toISOString();
+    const res = await db.collection("admin_users").updateOne(
+      { id: Number(adminUserId) },
+      {
+        $set: {
+          hashed_password: hashedPassword,
+          must_change_password: 0,
+          updated_at: now,
+        },
+      }
+    );
+    return res.matchedCount > 0;
+  } catch (err) {
+    console.error("[MongoDB Admin Password Update Error]:", err);
+    return false;
+  }
+}
+
+/**
+ * Saves or updates an active OTP challenge so it survives worker processes.
+ */
+export async function setAdminOtpChallenge(
+  userId: number,
+  otp: string,
+  expiresAt: number,
+  username: string
+): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    await db.collection("admin_otp_challenges").updateOne(
+      { user_id: Number(userId) },
+      {
+        $set: {
+          user_id: Number(userId),
+          otp,
+          expires_at: expiresAt,
+          username,
+          created_at: new Date().toISOString(),
+        },
+      },
+      { upsert: true }
+    );
+    return true;
+  } catch (err) {
+    console.error("[MongoDB Set Admin OTP Error]:", err);
+    return false;
+  }
+}
+
+/**
+ * Retrieves an active OTP challenge for a user.
+ */
+export async function getAdminOtpChallenge(
+  userId: number
+): Promise<{ otp: string; expires_at: number; username: string } | null> {
+  try {
+    const db = await getMongoDb();
+    const doc = await db.collection("admin_otp_challenges").findOne({ user_id: Number(userId) });
+    if (!doc) return null;
+    return {
+      otp: doc.otp,
+      expires_at: doc.expires_at,
+      username: doc.username,
+    };
+  } catch (err) {
+    console.error("[MongoDB Get Admin OTP Error]:", err);
+    return null;
+  }
+}
+
+/**
+ * Deletes an active OTP challenge for a user after use or expiry.
+ */
+export async function deleteAdminOtpChallenge(userId: number): Promise<boolean> {
+  try {
+    const db = await getMongoDb();
+    await db.collection("admin_otp_challenges").deleteOne({ user_id: Number(userId) });
+    return true;
+  } catch (err) {
+    console.error("[MongoDB Delete Admin OTP Error]:", err);
+    return false;
+  }
+}
+
+// ==============================================================================
+// WEBINAR MANAGEMENT FUNCTIONS
+// ==============================================================================
+
 /**
  * Retrieves all webinars ordered by status, scheduled date with registration count.
  */
-export function getAllWebinars(): WebinarRecord[] {
-  const db = getDb();
-  if (!db) return [];
-
+export async function getAllWebinars(): Promise<WebinarRecord[]> {
   try {
-    const rows = db.prepare(`
-      SELECT 
-        w.*,
-        COUNT(r.id) as registrant_count
-      FROM webinars w
-      LEFT JOIN webinar_registrations r ON w.id = r.webinar_id
-      GROUP BY w.id
-      ORDER BY 
-        CASE w.status WHEN 'published' THEN 1 WHEN 'draft' THEN 2 ELSE 3 END ASC,
-        w.created_at DESC
-    `).all() as unknown as WebinarRecord[];
+    const db = await getMongoDb();
+    const webinars = await db
+      .collection("webinars")
+      .aggregate([
+        {
+          $lookup: {
+            from: "webinar_registrations",
+            localField: "id",
+            foreignField: "webinar_id",
+            as: "registrations",
+          },
+        },
+        {
+          $addFields: {
+            registrant_count: { $size: "$registrations" },
+            statusSort: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ["$status", "published"] }, then: 1 },
+                  { case: { $eq: ["$status", "draft"] }, then: 2 },
+                ],
+                default: 3,
+              },
+            },
+          },
+        },
+        { $sort: { statusSort: 1, created_at: -1 } },
+        { $project: { registrations: 0, statusSort: 0 } },
+      ])
+      .toArray();
 
-    return rows.map((r) => ({ ...r }));
+    return webinars.map((w: any) => ({
+      id: w.id,
+      slug: w.slug,
+      title: w.title,
+      subtitle: w.subtitle || null,
+      date_time: w.date_time,
+      duration_minutes: w.duration_minutes ?? 90,
+      banner_image_url: w.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: w.short_description || null,
+      full_description_html: w.full_description_html || null,
+      topics_json: w.topics_json || "[]",
+      mentor_name: w.mentor_name || "Amit Gupta",
+      mentor_bio: w.mentor_bio || null,
+      status: w.status || "draft",
+      is_active: w.is_active ?? 1,
+      max_seats: w.max_seats ?? 500,
+      zoom_join_url: w.zoom_join_url || null,
+      created_at: w.created_at,
+      updated_at: w.updated_at,
+      registrant_count: w.registrant_count || 0,
+    }));
   } catch (err) {
-    console.error("[DB Get All Webinars Error]:", err);
+    console.error("[MongoDB Get All Webinars Error]:", err);
     return [];
   }
 }
@@ -633,25 +651,54 @@ export function getAllWebinars(): WebinarRecord[] {
 /**
  * Retrieves only publicly published webinars for public-facing pages (excluding drafts and archived).
  */
-export function getPublishedWebinars(): WebinarRecord[] {
-  const db = getDb();
-  if (!db) return [];
-
+export async function getPublishedWebinars(): Promise<WebinarRecord[]> {
   try {
-    const rows = db.prepare(`
-      SELECT 
-        w.*,
-        COUNT(r.id) as registrant_count
-      FROM webinars w
-      LEFT JOIN webinar_registrations r ON w.id = r.webinar_id
-      WHERE w.status = 'published' AND w.is_active = 1
-      GROUP BY w.id
-      ORDER BY w.created_at DESC
-    `).all() as unknown as WebinarRecord[];
+    const db = await getMongoDb();
+    const webinars = await db
+      .collection("webinars")
+      .aggregate([
+        { $match: { status: "published", is_active: 1 } },
+        {
+          $lookup: {
+            from: "webinar_registrations",
+            localField: "id",
+            foreignField: "webinar_id",
+            as: "registrations",
+          },
+        },
+        {
+          $addFields: {
+            registrant_count: { $size: "$registrations" },
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $project: { registrations: 0 } },
+      ])
+      .toArray();
 
-    return rows.map((r) => ({ ...r }));
+    return webinars.map((w: any) => ({
+      id: w.id,
+      slug: w.slug,
+      title: w.title,
+      subtitle: w.subtitle || null,
+      date_time: w.date_time,
+      duration_minutes: w.duration_minutes ?? 90,
+      banner_image_url: w.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: w.short_description || null,
+      full_description_html: w.full_description_html || null,
+      topics_json: w.topics_json || "[]",
+      mentor_name: w.mentor_name || "Amit Gupta",
+      mentor_bio: w.mentor_bio || null,
+      status: "published",
+      is_active: 1,
+      max_seats: w.max_seats ?? 500,
+      zoom_join_url: w.zoom_join_url || null,
+      created_at: w.created_at,
+      updated_at: w.updated_at,
+      registrant_count: w.registrant_count || 0,
+    }));
   } catch (err) {
-    console.error("[DB Get Published Webinars Error]:", err);
+    console.error("[MongoDB Get Published Webinars Error]:", err);
     return [];
   }
 }
@@ -659,25 +706,59 @@ export function getPublishedWebinars(): WebinarRecord[] {
 /**
  * Retrieves a single webinar by its unique URL slug.
  */
-export function getWebinarBySlug(slug: string): WebinarRecord | null {
-  const db = getDb();
-  if (!db) return null;
-
+export async function getWebinarBySlug(slug: string): Promise<WebinarRecord | null> {
   try {
-    const row = db.prepare(`
-      SELECT 
-        w.*,
-        COUNT(r.id) as registrant_count
-      FROM webinars w
-      LEFT JOIN webinar_registrations r ON w.id = r.webinar_id
-      WHERE w.slug = ?
-      GROUP BY w.id
-      LIMIT 1
-    `).get(slug.trim().toLowerCase()) as unknown as WebinarRecord | undefined;
+    const db = await getMongoDb();
+    const cleanSlug = slug.trim().toLowerCase();
 
-    return row ? { ...row } : null;
+    const webinars = await db
+      .collection("webinars")
+      .aggregate([
+        { $match: { slug: cleanSlug } },
+        {
+          $lookup: {
+            from: "webinar_registrations",
+            localField: "id",
+            foreignField: "webinar_id",
+            as: "registrations",
+          },
+        },
+        {
+          $addFields: {
+            registrant_count: { $size: "$registrations" },
+          },
+        },
+        { $limit: 1 },
+        { $project: { registrations: 0 } },
+      ])
+      .toArray();
+
+    if (!webinars || webinars.length === 0) return null;
+    const w = webinars[0];
+
+    return {
+      id: w.id,
+      slug: w.slug,
+      title: w.title,
+      subtitle: w.subtitle || null,
+      date_time: w.date_time,
+      duration_minutes: w.duration_minutes ?? 90,
+      banner_image_url: w.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: w.short_description || null,
+      full_description_html: w.full_description_html || null,
+      topics_json: w.topics_json || "[]",
+      mentor_name: w.mentor_name || "Amit Gupta",
+      mentor_bio: w.mentor_bio || null,
+      status: w.status || "draft",
+      is_active: w.is_active ?? 0,
+      max_seats: w.max_seats ?? 500,
+      zoom_join_url: w.zoom_join_url || null,
+      created_at: w.created_at,
+      updated_at: w.updated_at,
+      registrant_count: w.registrant_count || 0,
+    };
   } catch (err) {
-    console.error("[DB Get Webinar By Slug Error]:", err);
+    console.error("[MongoDB Get Webinar By Slug Error]:", err);
     return null;
   }
 }
@@ -685,18 +766,39 @@ export function getWebinarBySlug(slug: string): WebinarRecord | null {
 /**
  * Retrieves a single webinar by its primary ID.
  */
-export function getWebinarById(id: number): WebinarRecord | null {
-  const db = getDb();
-  if (!db) return null;
-
+export async function getWebinarById(id: number): Promise<WebinarRecord | null> {
   try {
-    const row = db.prepare(`
-      SELECT * FROM webinars WHERE id = ? LIMIT 1
-    `).get(id) as unknown as WebinarRecord | undefined;
+    const db = await getMongoDb();
+    const w = await db.collection("webinars").findOne({ id: Number(id) });
+    if (!w) return null;
 
-    return row ? { ...row } : null;
+    const count = await db
+      .collection("webinar_registrations")
+      .countDocuments({ webinar_id: Number(id) });
+
+    return {
+      id: w.id,
+      slug: w.slug,
+      title: w.title,
+      subtitle: w.subtitle || null,
+      date_time: w.date_time,
+      duration_minutes: w.duration_minutes ?? 90,
+      banner_image_url: w.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: w.short_description || null,
+      full_description_html: w.full_description_html || null,
+      topics_json: w.topics_json || "[]",
+      mentor_name: w.mentor_name || "Amit Gupta",
+      mentor_bio: w.mentor_bio || null,
+      status: w.status || "draft",
+      is_active: w.is_active ?? 0,
+      max_seats: w.max_seats ?? 500,
+      zoom_join_url: w.zoom_join_url || null,
+      created_at: w.created_at,
+      updated_at: w.updated_at,
+      registrant_count: count,
+    };
   } catch (err) {
-    console.error("[DB Get Webinar By ID Error]:", err);
+    console.error("[MongoDB Get Webinar By ID Error]:", err);
     return null;
   }
 }
@@ -704,34 +806,66 @@ export function getWebinarById(id: number): WebinarRecord | null {
 /**
  * Retrieves the currently active published webinar with registrant count.
  */
-export function getActiveWebinar(): WebinarRecord | null {
-  const db = getDb();
-  if (!db) return null;
-
+export async function getActiveWebinar(): Promise<WebinarRecord | null> {
   try {
-    const row = db.prepare(`
-      SELECT 
-        w.*,
-        COUNT(r.id) as registrant_count
-      FROM webinars w
-      LEFT JOIN webinar_registrations r ON w.id = r.webinar_id
-      WHERE w.status = 'published' AND w.is_active = 1
-      GROUP BY w.id
-      ORDER BY w.created_at DESC
-      LIMIT 1
-    `).get() as unknown as WebinarRecord | undefined;
+    const db = await getMongoDb();
+    const webinars = await db
+      .collection("webinars")
+      .aggregate([
+        { $match: { status: "published", is_active: 1 } },
+        {
+          $lookup: {
+            from: "webinar_registrations",
+            localField: "id",
+            foreignField: "webinar_id",
+            as: "registrations",
+          },
+        },
+        {
+          $addFields: {
+            registrant_count: { $size: "$registrations" },
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: 1 },
+        { $project: { registrations: 0 } },
+      ])
+      .toArray();
 
-    return row ? { ...row } : null;
+    if (!webinars || webinars.length === 0) return null;
+    const w = webinars[0];
+
+    return {
+      id: w.id,
+      slug: w.slug,
+      title: w.title,
+      subtitle: w.subtitle || null,
+      date_time: w.date_time,
+      duration_minutes: w.duration_minutes ?? 90,
+      banner_image_url: w.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: w.short_description || null,
+      full_description_html: w.full_description_html || null,
+      topics_json: w.topics_json || "[]",
+      mentor_name: w.mentor_name || "Amit Gupta",
+      mentor_bio: w.mentor_bio || null,
+      status: w.status || "published",
+      is_active: 1,
+      max_seats: w.max_seats ?? 500,
+      zoom_join_url: w.zoom_join_url || null,
+      created_at: w.created_at,
+      updated_at: w.updated_at,
+      registrant_count: w.registrant_count || 0,
+    };
   } catch (err) {
-    console.error("[DB Get Active Webinar Error]:", err);
+    console.error("[MongoDB Get Active Webinar Error]:", err);
     return null;
   }
 }
 
 /**
- * Creates a new webinar campaign.
+ * Creates a new webinar campaign in MongoDB Atlas.
  */
-export function createWebinar(data: {
+export async function createWebinar(data: {
   slug: string;
   title: string;
   subtitle?: string;
@@ -746,44 +880,40 @@ export function createWebinar(data: {
   is_active?: number;
   max_seats?: number;
   zoom_join_url?: string;
-}): number | null {
-  const db = getDb();
-  if (!db) return null;
-
-  const status = data.status || "draft";
-  const isActive = status === "published" ? 1 : 0;
-
+}): Promise<number | null> {
   try {
-    const result = db.prepare(`
-      INSERT INTO webinars (
-        slug, title, subtitle, date_time, duration_minutes,
-        banner_image_url, short_description, topics_json,
-        mentor_name, mentor_bio, status, is_active, max_seats, zoom_join_url
-      ) VALUES (
-        ?, ?, ?, ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?, ?, ?
-      )
-    `).run(
-      data.slug.trim().toLowerCase(),
-      data.title.trim(),
-      data.subtitle?.trim() || null,
-      data.date_time.trim(),
-      data.duration_minutes ?? 90,
-      data.banner_image_url?.trim() || "/images/traderoom/time-cycle-trading.jpg",
-      data.short_description?.trim() || null,
-      data.topics_json || "[]",
-      data.mentor_name?.trim() || "Amit Gupta",
-      data.mentor_bio?.trim() || "15+ Years Active Market Veteran • SEBI / NISM Certified Research Analyst",
-      status,
-      isActive,
-      data.max_seats ?? 500,
-      data.zoom_join_url?.trim() || null
-    );
+    const db = await getMongoDb();
+    const nextId = await getNextSequence("webinars");
+    const status = data.status || "draft";
+    const isActive = status === "published" ? 1 : 0;
+    const now = new Date().toISOString();
 
-    return Number(result.lastInsertRowid);
+    await db.collection("webinars").insertOne({
+      id: nextId,
+      slug: data.slug.trim().toLowerCase(),
+      title: data.title.trim(),
+      subtitle: data.subtitle?.trim() || null,
+      date_time: data.date_time.trim(),
+      duration_minutes: data.duration_minutes ?? 90,
+      banner_image_url: data.banner_image_url?.trim() || "/images/traderoom/time-cycle-trading.jpg",
+      short_description: data.short_description?.trim() || null,
+      full_description_html: null,
+      topics_json: data.topics_json || "[]",
+      mentor_name: data.mentor_name?.trim() || "Amit Gupta",
+      mentor_bio:
+        data.mentor_bio?.trim() ||
+        "15+ Years Active Market Veteran • SEBI / NISM Certified Research Analyst",
+      status,
+      is_active: isActive,
+      max_seats: data.max_seats ?? 500,
+      zoom_join_url: data.zoom_join_url?.trim() || null,
+      created_at: now,
+      updated_at: now,
+    });
+
+    return nextId;
   } catch (err) {
-    console.error("[DB Create Webinar Error]:", err);
+    console.error("[MongoDB Create Webinar Error]:", err);
     return null;
   }
 }
@@ -791,59 +921,53 @@ export function createWebinar(data: {
 /**
  * Updates an existing webinar campaign.
  */
-export function updateWebinar(
+export async function updateWebinar(
   id: number,
   data: Partial<WebinarRecord>
-): boolean {
-  const db = getDb();
-  if (!db) return false;
-
+): Promise<boolean> {
   try {
-    const current = getWebinarById(id);
+    const db = await getMongoDb();
+    const current = await getWebinarById(id);
     if (!current) return false;
 
-    const newStatus = data.status !== undefined ? data.status : (data.is_active !== undefined ? (data.is_active ? "published" : "draft") : current.status);
+    const newStatus =
+      data.status !== undefined
+        ? data.status
+        : data.is_active !== undefined
+        ? data.is_active
+          ? "published"
+          : "draft"
+        : current.status;
     const newIsActive = newStatus === "published" ? 1 : 0;
+    const now = new Date().toISOString();
 
-    db.prepare(`
-      UPDATE webinars
-      SET slug = COALESCE(?, slug),
-          title = COALESCE(?, title),
-          subtitle = COALESCE(?, subtitle),
-          date_time = COALESCE(?, date_time),
-          duration_minutes = COALESCE(?, duration_minutes),
-          banner_image_url = COALESCE(?, banner_image_url),
-          short_description = COALESCE(?, short_description),
-          topics_json = COALESCE(?, topics_json),
-          mentor_name = COALESCE(?, mentor_name),
-          mentor_bio = COALESCE(?, mentor_bio),
-          status = COALESCE(?, status),
-          is_active = ?,
-          max_seats = COALESCE(?, max_seats),
-          zoom_join_url = COALESCE(?, zoom_join_url),
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `).run(
-      data.slug !== undefined && data.slug !== null ? data.slug.trim().toLowerCase() : (data.slug ?? null),
-      data.title !== undefined && data.title !== null ? data.title.trim() : (data.title ?? null),
-      data.subtitle !== undefined && data.subtitle !== null ? data.subtitle.trim() : (data.subtitle ?? null),
-      data.date_time !== undefined && data.date_time !== null ? data.date_time.trim() : (data.date_time ?? null),
-      data.duration_minutes !== undefined ? data.duration_minutes : null,
-      data.banner_image_url !== undefined && data.banner_image_url !== null ? data.banner_image_url.trim() : (data.banner_image_url ?? null),
-      data.short_description !== undefined && data.short_description !== null ? data.short_description.trim() : (data.short_description ?? null),
-      data.topics_json !== undefined ? data.topics_json : null,
-      data.mentor_name !== undefined && data.mentor_name !== null ? data.mentor_name.trim() : (data.mentor_name ?? null),
-      data.mentor_bio !== undefined && data.mentor_bio !== null ? data.mentor_bio.trim() : (data.mentor_bio ?? null),
-      newStatus,
-      newIsActive,
-      data.max_seats !== undefined ? data.max_seats : null,
-      data.zoom_join_url !== undefined && data.zoom_join_url !== null ? data.zoom_join_url.trim() : (data.zoom_join_url ?? null),
-      id
+    const updateDoc: Record<string, any> = {
+      updated_at: now,
+      status: newStatus,
+      is_active: newIsActive,
+    };
+
+    if (data.slug !== undefined) updateDoc.slug = data.slug.trim().toLowerCase();
+    if (data.title !== undefined) updateDoc.title = data.title.trim();
+    if (data.subtitle !== undefined) updateDoc.subtitle = data.subtitle?.trim() || null;
+    if (data.date_time !== undefined) updateDoc.date_time = data.date_time.trim();
+    if (data.duration_minutes !== undefined) updateDoc.duration_minutes = data.duration_minutes;
+    if (data.banner_image_url !== undefined) updateDoc.banner_image_url = data.banner_image_url?.trim() || null;
+    if (data.short_description !== undefined) updateDoc.short_description = data.short_description?.trim() || null;
+    if (data.topics_json !== undefined) updateDoc.topics_json = data.topics_json;
+    if (data.mentor_name !== undefined) updateDoc.mentor_name = data.mentor_name?.trim() || null;
+    if (data.mentor_bio !== undefined) updateDoc.mentor_bio = data.mentor_bio?.trim() || null;
+    if (data.max_seats !== undefined) updateDoc.max_seats = data.max_seats;
+    if (data.zoom_join_url !== undefined) updateDoc.zoom_join_url = data.zoom_join_url?.trim() || null;
+
+    const res = await db.collection("webinars").updateOne(
+      { id: Number(id) },
+      { $set: updateDoc }
     );
 
-    return true;
+    return res.matchedCount > 0;
   } catch (err) {
-    console.error("[DB Update Webinar Error]:", err);
+    console.error("[MongoDB Update Webinar Error]:", err);
     return false;
   }
 }
@@ -852,20 +976,19 @@ export function updateWebinar(
  * Registers a student for a specific webinar.
  * Automatically upserts user in users_master and inserts into webinar_registrations.
  */
-export function registerUserForWebinar(payload: {
+export async function registerUserForWebinar(payload: {
   webinarId: number;
   name: string;
   email: string;
   phone: string;
   experience?: string;
   ipAddress?: string;
-}): { success: boolean; registrationId?: number; isNewUser?: boolean; error?: string } {
-  const db = getDb();
-  if (!db) return { success: false, error: "Database unavailable." };
-
+}): Promise<{ success: boolean; registrationId?: number; isNewUser?: boolean; error?: string }> {
   try {
+    const db = await getMongoDb();
+
     // 1. Find or create master user identity
-    const userRes = findOrCreateUser({
+    const userRes = await findOrCreateUser({
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
@@ -873,7 +996,7 @@ export function registerUserForWebinar(payload: {
     });
 
     // 2. Record consent
-    recordConsent({
+    await recordConsent({
       userId: userRes.id,
       consentGiven: true,
       allowWhatsApp: true,
@@ -882,23 +1005,42 @@ export function registerUserForWebinar(payload: {
       ip: payload.ipAddress,
     });
 
-    // 3. Insert webinar registration (or ignore if already registered)
-    const stmt = db.prepare(`
-      INSERT INTO webinar_registrations (webinar_id, user_id, ip_address)
-      VALUES (?, ?, ?)
-      ON CONFLICT(webinar_id, user_id) DO UPDATE SET
-        registered_at = CURRENT_TIMESTAMP
-    `);
+    // 3. Insert or update webinar registration
+    const regCol = db.collection("webinar_registrations");
+    const existing = await regCol.findOne({
+      webinar_id: Number(payload.webinarId),
+      user_id: userRes.id,
+    });
 
-    const result = stmt.run(payload.webinarId, userRes.id, payload.ipAddress || null);
+    if (existing) {
+      await regCol.updateOne(
+        { _id: existing._id },
+        { $set: { registered_at: new Date().toISOString(), ip_address: payload.ipAddress || null } }
+      );
+      return {
+        success: true,
+        registrationId: existing.id || 1,
+        isNewUser: userRes.isNew,
+      };
+    }
+
+    const regId = await getNextSequence("webinar_registrations");
+    await regCol.insertOne({
+      id: regId,
+      webinar_id: Number(payload.webinarId),
+      user_id: userRes.id,
+      registered_at: new Date().toISOString(),
+      attendance_status: "Registered",
+      ip_address: payload.ipAddress || null,
+    });
 
     return {
       success: true,
-      registrationId: Number(result.lastInsertRowid) || 1,
+      registrationId: regId,
       isNewUser: userRes.isNew,
     };
   } catch (err: any) {
-    console.error("[DB Webinar Registration Error]:", err);
+    console.error("[MongoDB Webinar Registration Error]:", err);
     return { success: false, error: err?.message || "Failed to register for webinar." };
   }
 }
@@ -906,77 +1048,50 @@ export function registerUserForWebinar(payload: {
 /**
  * Deletes a webinar by its ID.
  */
-export function deleteWebinar(id: number): boolean {
-  const db = getDb();
-  if (!db) return false;
-
+export async function deleteWebinar(id: number): Promise<boolean> {
   try {
-    db.prepare("DELETE FROM webinars WHERE id = ?").run(id);
-    return true;
+    const db = await getMongoDb();
+    const res = await db.collection("webinars").deleteOne({ id: Number(id) });
+    await db.collection("webinar_registrations").deleteMany({ webinar_id: Number(id) });
+    return res.deletedCount > 0;
   } catch (err) {
-    console.error("[DB Delete Webinar Error]:", err);
+    console.error("[MongoDB Delete Webinar Error]:", err);
     return false;
   }
 }
 
 /**
  * Purges all user-submitted leads, inquiries, and master users, while strictly
- * preserving webinars, admin identities, and CMS/review content.
+ * preserving webinars, admin identities, and CMS content.
  */
-export function purgeAllLeadsAndContacts(): { success: boolean; purged: Record<string, number>; error?: string } {
-  const db = getDb();
+export async function purgeAllLeadsAndContacts(): Promise<{
+  success: boolean;
+  purged: Record<string, number>;
+  error?: string;
+}> {
   const purged: Record<string, number> = {};
-
-  if (db) {
-    try {
-      db.exec("PRAGMA foreign_keys = OFF;");
-
-      const tables = [
-        "leads",
-        "leads_contact",
-        "leads_newsletter",
-        "webinar_registrations",
-        "users_master",
-        "consent_status",
-        "followup_progress",
-      ];
-
-      for (const table of tables) {
-        try {
-          const row = db.prepare(`SELECT COUNT(*) as count FROM "${table}"`).get() as { count: number };
-          purged[table] = row ? row.count : 0;
-          db.exec(`DELETE FROM "${table}";`);
-        } catch {
-          purged[table] = 0;
-        }
-      }
-
-      try {
-        const placeholders = tables.map((t) => `'${t}'`).join(",");
-        db.exec(`DELETE FROM sqlite_sequence WHERE name IN (${placeholders});`);
-      } catch {
-        // ignore
-      }
-
-      db.exec("PRAGMA foreign_keys = ON;");
-      return { success: true, purged };
-    } catch (err: any) {
-      console.error("[DB Purge Error]:", err);
-      return { success: false, purged, error: err?.message };
-    }
-  }
-
-  // Purge JSON fallback store
   try {
-    const filePath = getJsonFilePath();
-    if (fs.existsSync(filePath)) {
-      const current = readJsonLeads();
-      purged["leads_json"] = current.length;
-      writeJsonLeads([]);
+    const db = await getMongoDb();
+    const collectionsToPurge = [
+      "leads",
+      "leads_contact",
+      "leads_newsletter",
+      "webinar_registrations",
+      "users_master",
+      "consent_status",
+      "followup_progress",
+    ];
+
+    for (const colName of collectionsToPurge) {
+      const col = db.collection(colName);
+      const count = await col.countDocuments();
+      purged[colName] = count;
+      await col.deleteMany({});
     }
+
     return { success: true, purged };
   } catch (err: any) {
+    console.error("[MongoDB Purge Error]:", err);
     return { success: false, purged, error: err?.message };
   }
 }
-

@@ -116,7 +116,7 @@ export async function dispatchTelegramOtp(identifier: string): Promise<{
   mobileMasked?: string;
   hasPassword?: boolean;
 }> {
-  const admin = getAdminByUsernameOrMobile(identifier);
+  const admin = await getAdminByUsernameOrMobile(identifier);
   if (!admin) {
     return { success: false, error: "Access Denied: Unrecognized username or mobile number." };
   }
@@ -146,14 +146,14 @@ export async function dispatchTelegramOtp(identifier: string): Promise<{
   const otp = crypto.randomInt(100000, 999999).toString();
   const expiresAt = Date.now() + OTP_EXPIRY_MS;
 
-  // Store in memory AND persist in SQLite so it survives across worker processes
+  // Store in memory AND persist in MongoDB so it survives across worker processes
   activeOtps.set(admin.id, {
     otp,
     expiresAt,
     userId: admin.id,
     username: admin.username,
   });
-  setAdminOtpChallenge(admin.id, otp, expiresAt, admin.username);
+  await setAdminOtpChallenge(admin.id, otp, expiresAt, admin.username);
 
   const timeStr = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
   const messageText = isPrivate
@@ -233,11 +233,11 @@ _Notice: Delivered to Admin Channel. Link your personal Telegram ID in Admin Pro
 /**
  * Validates OTP and issues a cryptographically signed 7-day session token.
  */
-export function verifyOtpAndCreateSession(
+export async function verifyOtpAndCreateSession(
   identifier: string,
   inputOtp: string
-): { success: boolean; token?: string; error?: string; mustChangePassword?: boolean } {
-  const admin = getAdminByUsernameOrMobile(identifier);
+): Promise<{ success: boolean; token?: string; error?: string; mustChangePassword?: boolean }> {
+  const admin = await getAdminByUsernameOrMobile(identifier);
   if (!admin) {
     return { success: false, error: "Unrecognized administrator account." };
   }
@@ -247,10 +247,10 @@ export function verifyOtpAndCreateSession(
     return { success: false, error: envCheck.error };
   }
 
-  // Check in-memory first, fallback to SQLite persistence
+  // Check in-memory first, fallback to DB persistence
   let challenge = activeOtps.get(admin.id);
   if (!challenge) {
-    const dbChallenge = getAdminOtpChallenge(admin.id);
+    const dbChallenge = await getAdminOtpChallenge(admin.id);
     if (dbChallenge) {
       challenge = {
         otp: dbChallenge.otp,
@@ -267,7 +267,7 @@ export function verifyOtpAndCreateSession(
 
   if (Date.now() > challenge.expiresAt) {
     activeOtps.delete(admin.id);
-    deleteAdminOtpChallenge(admin.id);
+    await deleteAdminOtpChallenge(admin.id);
     return { success: false, error: "Passcode has expired. Please request a new OTP." };
   }
 
@@ -275,9 +275,9 @@ export function verifyOtpAndCreateSession(
     return { success: false, error: "Invalid passcode. Please check your Telegram channel/chat." };
   }
 
-  // Invalidate challenge immediately in both memory and SQLite
+  // Invalidate challenge immediately in both memory and DB
   activeOtps.delete(admin.id);
-  deleteAdminOtpChallenge(admin.id);
+  await deleteAdminOtpChallenge(admin.id);
 
   const token = createAdminSessionToken(admin);
   return {
@@ -290,11 +290,11 @@ export function verifyOtpAndCreateSession(
 /**
  * Validates direct Password Login.
  */
-export function verifyPasswordLogin(
+export async function verifyPasswordLogin(
   identifier: string,
   passwordInput: string
-): { success: boolean; token?: string; error?: string } {
-  const admin = getAdminByUsernameOrMobile(identifier);
+): Promise<{ success: boolean; token?: string; error?: string }> {
+  const admin = await getAdminByUsernameOrMobile(identifier);
   if (!admin) {
     return { success: false, error: "Invalid credentials." };
   }
@@ -390,7 +390,7 @@ export async function getAdminSession(): Promise<AdminSessionPayload | null> {
   if (!check.valid || !check.payload) return null;
 
   // Retrieve live record to reflect any profile changes made in this session
-  const liveAdmin = getAdminById(check.payload.id);
+  const liveAdmin = await getAdminById(check.payload.id);
   if (!liveAdmin || !liveAdmin.is_active) return null;
 
   // Ensure 2-layer env check still passes

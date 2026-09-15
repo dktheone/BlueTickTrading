@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Username/Mobile and 6-digit OTP are required." }, { status: 400 });
     }
 
-    const verification = verifyOtpAndCreateSession(identifier, otp);
+    const verification = await verifyOtpAndCreateSession(identifier, otp);
     if (!verification.success || !verification.token) {
       return NextResponse.json({ error: verification.error || "OTP verification failed." }, { status: 401 });
     }

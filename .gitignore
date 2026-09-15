@@ -13,6 +13,7 @@ demographic.txt
 .env.development.local
 .env.test.local
 .env.production.local
+atlas-credentials.env
 
 # Dependencies
 node_modules/

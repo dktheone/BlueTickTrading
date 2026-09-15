@@ -12,8 +12,8 @@ import ContactSection from "@/components/traderoom/ContactSection";
 import Footer from "@/components/traderoom/Footer";
 import { getActiveWebinar } from "@/lib/db";
 
-export default function HomePage() {
-  const activeWebinar = getActiveWebinar();
+export default async function HomePage() {
+  const activeWebinar = await getActiveWebinar();
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

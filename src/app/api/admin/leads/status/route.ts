@@ -23,9 +23,9 @@ export async function PATCH(request: Request) {
 
     let success = false;
     if (type === "webinar") {
-      success = updateLeadStatus(Number(id), String(status));
+      success = await updateLeadStatus(Number(id), String(status));
     } else if (type === "contact") {
-      success = updateContactInquiryStatus(Number(id), String(status));
+      success = await updateContactInquiryStatus(Number(id), String(status));
     }
 
     if (!success) {

@@ -10,10 +10,10 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login");
   }
 
-  const rawLeads = getAllLeads(500);
-  const totalLeads = Number(getLeadsCount());
-  const rawWebinars = getAllWebinars();
-  const rawContacts = getAllContactInquiries(500);
+  const rawLeads = await getAllLeads(500);
+  const totalLeads = Number(await getLeadsCount());
+  const rawWebinars = await getAllWebinars();
+  const rawContacts = await getAllContactInquiries(500);
 
   // Deep sanitize to plain JSON serializable objects (React 19 / Next.js Server-to-Client rule)
   const cleanLeads = JSON.parse(JSON.stringify(rawLeads));

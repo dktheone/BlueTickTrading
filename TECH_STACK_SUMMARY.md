@@ -42,7 +42,7 @@
 | **UI Library** | **React** | `19.0.0` | Latest React engine with Server Actions compatibility. |
 | **Language** | **TypeScript** | `5.7.2` | Strict type checking enabled (`tsconfig.json`). |
 | **Styling** | **Tailwind CSS** | `3.4.16` | Utility-first CSS with custom Traderoom theme tokens. |
-| **Database** | **Dual-Mode SQLite (`node:sqlite`) & JSON** | `Native (Node 22+) / Fallback` | Zero-dependency native SQLite (`DatabaseSync`) storing into `data/leads.db`, with automatic resilient JSON fallback (`data/leads.json`) for Node < 22.5. 100% Hostinger Linux CI/CD compatible. |
+| **Database** | **MongoDB Atlas (M0 Free Cluster)** | `mongodb ^6.x` | Managed cloud MongoDB Atlas cluster (`bluetick_trading` on AWS Mumbai) with cached connection singleton (`src/lib/mongodb.ts`) for Next.js App Router. Eliminates file locks, SQLite WAL persistence issues, and Hostinger multi-worker concurrency limits. |
 | **Email Service** | **Hostinger Webmail SMTP (SSL/TLS 465)** | `Nodemailer ^6.9.0` | Fully RFC-compliant structured headers with domain FQDN Message-ID, student reply-to routed to `support@blueticktradingschool.com`, and admin alerts delivered to `info@blueticktradingschool.com`. |
 | **Messaging API** | **Telegram Bot API** | Native REST | Instant admin alert dispatch into closed channel + Telegram OTP authentication engine. |
 | **Forms & State** | **React Hook Form** | `^7.88.0` | Performant, uncontrolled reactive form management with native validation integration. |

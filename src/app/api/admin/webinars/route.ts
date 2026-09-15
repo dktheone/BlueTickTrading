@@ -15,7 +15,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
     }
 
-    const webinars = getAllWebinars();
+    const webinars = await getAllWebinars();
     return NextResponse.json({ success: true, webinars });
   } catch (err) {
     console.error("[Admin Webinars GET Error]:", err);
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
     const topicsJson = Array.isArray(topics) ? JSON.stringify(topics) : typeof topics === "string" ? topics : "[]";
 
-    const newId = createWebinar({
+    const newId = await createWebinar({
       title,
       slug,
       subtitle,
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const created = getWebinarById(newId);
+    const created = await getWebinarById(newId);
     return NextResponse.json({
       success: true,
       message: "Webinar scheduled successfully.",
@@ -116,7 +116,7 @@ export async function PATCH(request: Request) {
 
     const topicsJson = topics !== undefined ? (Array.isArray(topics) ? JSON.stringify(topics) : String(topics)) : undefined;
 
-    const ok = updateWebinar(Number(id), {
+    const ok = await updateWebinar(Number(id), {
       title,
       slug,
       subtitle,
@@ -134,7 +134,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Failed to update webinar record." }, { status: 500 });
     }
 
-    const updated = getWebinarById(Number(id));
+    const updated = await getWebinarById(Number(id));
     return NextResponse.json({
       success: true,
       message: "Webinar updated successfully.",
@@ -160,7 +160,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Webinar ID parameter missing." }, { status: 400 });
     }
 
-    const ok = deleteWebinar(Number(idParam));
+    const ok = await deleteWebinar(Number(idParam));
     if (!ok) {
       return NextResponse.json({ error: "Failed to delete webinar." }, { status: 500 });
     }

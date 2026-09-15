@@ -4,62 +4,92 @@
  * ==============================================================================
  * Blue Tick Trading School — Database Lead & Contact Purge Script
  * ==============================================================================
- * Uses db.ts export to execute within the unified SQLite lifecycle.
- * Wipes leads, contacts, webinar registrations, users_master, and consent records.
- * STRICTLY PRESERVES webinars, admin accounts, and pages/reviews.
+ * Connects to MongoDB Atlas cluster directly.
+ * Wipes leads, leads_contact, leads_newsletter, webinar_registrations, users_master,
+ * and consent_status records.
+ * STRICTLY PRESERVES webinars, admin_users, and admin_user_profile.
  * ==============================================================================
  */
 
-import path from "node:path";
-import fs from "node:fs";
-import { purgeAllLeadsAndContacts, getDb } from "../src/lib/db.ts";
+import { MongoClient } from "mongodb";
+import fs from "fs";
+import path from "path";
 
-console.log("=================================================================");
-console.log(" Blue Tick Trading School — Database Lead & Contact Purge");
-console.log("=================================================================\n");
+// Load environment variables from .env.local or .env
+const envLocalPath = path.resolve(".env.local");
+let uri = process.env.MONGODB_URI;
+let dbName = process.env.MONGODB_DB || "bluetick_trading";
 
-const dataDir = path.join(process.cwd(), "data");
-const dbPath = path.join(dataDir, "leads.db");
-
-if (fs.existsSync(dbPath)) {
-  const backupName = `leads.backup.${new Date().toISOString().replace(/[:.]/g, "-")}.db`;
-  const backupPath = path.join(dataDir, backupName);
-  try {
-    fs.copyFileSync(dbPath, backupPath);
-    console.log(`[Backup] Safe database backup created: data/${backupName}`);
-  } catch (err) {
-    console.warn(`[Backup Warning] Could not copy: ${err.message}`);
-  }
-}
-
-console.log("[Purge] Purging user-submitted lead and contact tables...");
-const result = purgeAllLeadsAndContacts();
-
-if (!result.success) {
-  console.error("\n[Error] Purge failed:", result.error);
-  process.exit(1);
-}
-
-console.log("\nPurge Summary:");
-for (const [table, count] of Object.entries(result.purged)) {
-  console.log(`  ✓ Table '${table}': Purged ${count} records.`);
-}
-
-console.log("\n[Preserved Data Verification]");
-const db = getDb();
-if (db) {
-  const preservedTables = ["webinars", "admin_users", "admin_user_profile", "pages", "reviews"];
-  for (const t of preservedTables) {
-    try {
-      const row = db.prepare(`SELECT COUNT(*) as count FROM "${t}"`).get();
-      console.log(`  ✓ Table '${t}': ${row ? row.count : 0} records intact.`);
-    } catch {
-      // Table may not exist yet
+if (fs.existsSync(envLocalPath)) {
+  const content = fs.readFileSync(envLocalPath, "utf-8");
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("MONGODB_URI=") && !uri) {
+      uri = trimmed.replace("MONGODB_URI=", "").trim();
+    }
+    if (trimmed.startsWith("MONGODB_DB=") && (!process.env.MONGODB_DB || dbName === "bluetick_trading")) {
+      dbName = trimmed.replace("MONGODB_DB=", "").trim();
     }
   }
 }
 
-console.log("\n=================================================================");
-console.log(" SUCCESS: All leads, contacts, and user records have been wiped.");
-console.log(" All webinar campaigns and admin accounts remain 100% intact.");
+if (!uri) {
+  console.error("Error: MONGODB_URI not found in .env.local or environment.");
+  process.exit(1);
+}
+
+console.log("=================================================================");
+console.log(" Blue Tick Trading School — MongoDB Atlas Lead & Contact Purge");
 console.log("=================================================================\n");
+
+async function main() {
+  const client = new MongoClient(uri);
+  await client.connect();
+  const db = client.db(dbName);
+  console.log(`[Connected] MongoDB Database: "${db.databaseName}"`);
+
+  const collectionsToPurge = [
+    "leads",
+    "leads_contact",
+    "leads_newsletter",
+    "webinar_registrations",
+    "users_master",
+    "consent_status",
+    "followup_progress",
+  ];
+
+  console.log("\n[Purge] Purging user-submitted lead and contact collections...");
+  for (const colName of collectionsToPurge) {
+    const col = db.collection(colName);
+    const count = await col.countDocuments();
+    await col.deleteMany({});
+    console.log(`  ✓ Collection '${colName}': Purged ${count} records.`);
+  }
+
+  // Reset leads and registrations counters so IDs start cleanly
+  const countersCol = db.collection("counters");
+  await countersCol.updateOne({ _id: "leads" }, { $set: { seq: 0 } }, { upsert: true });
+  await countersCol.updateOne({ _id: "leads_contact" }, { $set: { seq: 0 } }, { upsert: true });
+  await countersCol.updateOne({ _id: "users_master" }, { $set: { seq: 0 } }, { upsert: true });
+  await countersCol.updateOne({ _id: "webinar_registrations" }, { $set: { seq: 0 } }, { upsert: true });
+  console.log("  ✓ Sequence counters reset for lead collections.");
+
+  console.log("\n[Preserved Data Verification]");
+  const preservedCollections = ["webinars", "admin_users", "admin_user_profile"];
+  for (const c of preservedCollections) {
+    const count = await db.collection(c).countDocuments();
+    console.log(`  ✓ Collection '${c}': ${count} records intact.`);
+  }
+
+  console.log("\n=================================================================");
+  console.log(" SUCCESS: All leads, contacts, and user records have been wiped.");
+  console.log(" All webinar campaigns and admin accounts remain 100% intact.");
+  console.log("=================================================================\n");
+
+  await client.close();
+}
+
+main().catch((err) => {
+  console.error("Purge error:", err);
+  process.exit(1);
+});

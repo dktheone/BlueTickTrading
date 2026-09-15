@@ -34,7 +34,7 @@ interface WebinarPageProps {
 
 export async function generateMetadata({ params }: WebinarPageProps) {
   const { slug } = await params;
-  const dbWebinar = getWebinarBySlug(slug);
+  const dbWebinar = await getWebinarBySlug(slug);
 
   if (dbWebinar) {
     return {
@@ -57,7 +57,7 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
   const { slug } = await params;
   const sParams = searchParams ? await searchParams : {};
   const isPreview = sParams?.preview === "true";
-  const dbWebinar = getWebinarBySlug(slug);
+  const dbWebinar = await getWebinarBySlug(slug);
 
   const status = dbWebinar?.status || (dbWebinar?.is_active ? "published" : "draft");
   const isDraft = status === "draft";
