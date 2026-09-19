@@ -6,6 +6,7 @@ import Header from "@/components/traderoom/Header";
 import Footer from "@/components/traderoom/Footer";
 import ContactForm from "@/components/forms/ContactForm";
 import { getWebinarBySlug } from "@/lib/db";
+import { calculateSeatMetrics } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -132,8 +133,7 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
     slug: dbWebinar?.slug || slug,
   };
 
-  const seatsLeft = Math.max(0, webinarData.totalSeats - webinarData.registeredCount);
-  const percentFilled = Math.min(100, Math.round((webinarData.registeredCount / webinarData.totalSeats) * 100));
+  const seatMetrics = calculateSeatMetrics(webinarData.registeredCount, webinarData.totalSeats);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFB]">
@@ -170,7 +170,7 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
               </Link>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-emerald-300 text-[11px] font-bold border border-white/15">
-                  <Flame className="w-3.5 h-3.5 text-[#2FFFB9]" /> {seatsLeft} Seats Remaining
+                  <Flame className="w-3.5 h-3.5 text-[#2FFFB9]" /> {seatMetrics.remainingSeats} Seats Remaining
                 </span>
               </div>
             </div>
@@ -279,18 +279,21 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
                   <div className="flex items-center justify-between text-xs font-bold text-slate-200 mb-1.5">
                     <span className="flex items-center gap-1 text-[#2FFFB9]">
                       <Users className="w-3.5 h-3.5" />
-                      <span>{webinarData.registeredCount} Registered</span>
+                      <span>{seatMetrics.displayedCount} Registered</span>
                     </span>
-                    <span className="text-slate-300">{webinarData.totalSeats} Max Seats</span>
+                    <span className="text-slate-300">{seatMetrics.maxSeats} Max Seats</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-white/20 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-700 ${
-                        percentFilled >= 90 ? "bg-rose-400" : percentFilled >= 70 ? "bg-amber-300" : "bg-[#2FFFB9]"
+                        seatMetrics.fillPercentage >= 90 ? "bg-rose-400" : seatMetrics.fillPercentage >= 70 ? "bg-amber-300" : "bg-[#2FFFB9]"
                       }`}
-                      style={{ width: `${percentFilled}%` }}
+                      style={{ width: `${seatMetrics.fillPercentage}%` }}
                     />
                   </div>
+                  <p className="text-[11px] text-slate-300 mt-1 text-right">
+                    {seatMetrics.remainingSeats} seats left for this cohort
+                  </p>
                 </div>
 
                 {/* Redesigned Streamlined Form: Name, Email, Phone + Consent only */}

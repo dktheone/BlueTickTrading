@@ -6,6 +6,7 @@ import Header from "@/components/traderoom/Header";
 import Footer from "@/components/traderoom/Footer";
 import ContactForm from "@/components/forms/ContactForm";
 import { getPublishedWebinars, getActiveWebinar } from "@/lib/db";
+import { calculateSeatMetrics } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -63,10 +64,7 @@ export default async function WebinarsPage() {
     }
   }
 
-  const fillPercentage = Math.min(
-    100,
-    Math.round((registrantCount / maxSeats) * 100)
-  );
+  const seatMetrics = calculateSeatMetrics(registrantCount, maxSeats);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -170,17 +168,17 @@ export default async function WebinarsPage() {
                       <Users className="w-4 h-4 text-[#0E3B43]" /> Live Cohort Capacity
                     </span>
                     <span className="font-mono font-extrabold text-sm">
-                      {registrantCount} / {maxSeats} Seats Filled
+                      {seatMetrics.displayedCount} / {seatMetrics.maxSeats} Seats Filled
                     </span>
                   </div>
                   <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#0E3B43] to-[#2FFFB9] transition-all duration-1000 rounded-full"
-                      style={{ width: `${fillPercentage}%` }}
+                      style={{ width: `${seatMetrics.fillPercentage}%` }}
                     ></div>
                   </div>
                   <p className="text-[11px] text-slate-500 text-right">
-                    {Math.max(0, maxSeats - registrantCount)} seats left before registration closes
+                    {seatMetrics.remainingSeats} seats left before registration closes
                   </p>
                 </div>
 

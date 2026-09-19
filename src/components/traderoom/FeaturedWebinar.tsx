@@ -16,6 +16,7 @@ import {
   Flame,
 } from "lucide-react";
 import { WebinarRecord } from "@/lib/db";
+import { calculateSeatMetrics } from "@/lib/utils";
 
 interface FeaturedWebinarProps {
   webinar?: WebinarRecord | null;
@@ -54,10 +55,7 @@ export default function FeaturedWebinar({ webinar }: FeaturedWebinarProps) {
     }
   }
 
-  const fillPercentage = Math.min(
-    100,
-    Math.round((registrantCount / maxSeats) * 100)
-  );
+  const seatMetrics = calculateSeatMetrics(registrantCount, maxSeats);
 
   return (
     <section id="webinar-section" className="py-20 bg-gradient-to-b from-white via-[#F8FAFB] to-[#F0F5F6] relative overflow-hidden">
@@ -122,17 +120,17 @@ export default function FeaturedWebinar({ webinar }: FeaturedWebinarProps) {
                       <Users className="w-4 h-4 text-[#0E3B43]" /> Seat Availability
                     </span>
                     <span className="font-mono font-extrabold text-sm">
-                      {registrantCount} / {maxSeats} Reserved
+                      {seatMetrics.displayedCount} / {seatMetrics.maxSeats} Reserved
                     </span>
                   </div>
                   <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#0E3B43] to-[#2FFFB9] transition-all duration-1000 rounded-full"
-                      style={{ width: `${fillPercentage}%` }}
+                      style={{ width: `${seatMetrics.fillPercentage}%` }}
                     ></div>
                   </div>
                   <p className="text-[11px] text-slate-500 text-right">
-                    {Math.max(0, maxSeats - registrantCount)} free seats remaining for this cohort
+                    {seatMetrics.remainingSeats} free seats remaining for this cohort
                   </p>
                 </div>
 
