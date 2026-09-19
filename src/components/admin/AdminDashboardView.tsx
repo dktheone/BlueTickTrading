@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import WebinarBannerImage from "@/components/traderoom/WebinarBannerImage";
 import {
   LayoutDashboard,
   Users,
@@ -2466,8 +2467,9 @@ export default function AdminDashboardView({
                     {/* Live Preview Card */}
                     <div className="rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
                       <div className="relative aspect-[2/1] w-full max-h-56 overflow-hidden bg-slate-950">
-                        <Image
-                          src={webinarForm.banner_image_url || "/images/traderoom/time-cycle-trading.jpg"}
+                        <WebinarBannerImage
+                          src={webinarForm.banner_image_url}
+                          fallbackSrc="/images/traderoom/time-cycle-trading.jpg"
                           alt="Preview Banner"
                           fill
                           unoptimized

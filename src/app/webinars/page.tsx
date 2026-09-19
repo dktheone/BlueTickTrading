@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import WebinarBannerImage from "@/components/traderoom/WebinarBannerImage";
 import Header from "@/components/traderoom/Header";
 import Footer from "@/components/traderoom/Footer";
 import ContactForm from "@/components/forms/ContactForm";
@@ -109,8 +110,9 @@ export default async function WebinarsPage() {
                 
                 {/* 800x400 Fixed Aspect Ratio Banner */}
                 <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden bg-[#0E3B43] shadow-lg border border-slate-200/80 group">
-                  <Image
+                  <WebinarBannerImage
                     src={bannerUrl}
+                    fallbackSrc="/images/traderoom/time-cycle-trading.jpg"
                     alt={title}
                     fill
                     priority

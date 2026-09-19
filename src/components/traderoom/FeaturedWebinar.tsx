@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import WebinarBannerImage from "@/components/traderoom/WebinarBannerImage";
 import {
   Calendar,
   Clock,
@@ -90,8 +91,9 @@ export default function FeaturedWebinar({ webinar }: FeaturedWebinarProps) {
                 
                 {/* 800x400 Aspect Banner Container */}
                 <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden bg-[#0E3B43] shadow-lg border border-slate-200/60 group">
-                  <Image
+                  <WebinarBannerImage
                     src={bannerUrl}
+                    fallbackSrc="/images/traderoom/time-cycle-trading.jpg"
                     alt={title}
                     fill
                     priority

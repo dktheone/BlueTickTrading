@@ -158,9 +158,11 @@ The platform is engineered around a 10-stage dynamic webinar funnel and administ
 * **Webinar Landing Engine (`/webinars/[slug]`):** Dynamic SSR generation driven by SQLite campaign records (`webinars` table). 
   * Displays custom uploaded banner (`banner_image_url`), title, subtitle, schedule, duration, takeaways, mentor profile, and dynamic seat capacity.
   * **Draft & Preview Architecture:** Draft webinars are gated from the public. Admins can view and inspect unpublished webinars using `?preview=true` (complete with an admin preview sticky bar).
-* **Banner Image Upload Engine (`/api/admin/upload-banner`):**
-  * Native multipart/form-data upload handler saving directly to `public/uploads/banners/`.
-  * Validates file size (max 5MB) and mime types (JPEG, PNG, WebP, SVG) with secure sanitized naming. Zero external cloud storage dependencies.
+* **Banner Image Upload & Cloud Persistence Engine (`/api/admin/upload-banner` & `/uploads/banners/[filename]`):**
+  * **Persistent MongoDB Atlas Storage:** Multipart form uploads are validated (PNG, JPEG, WebP, max 5MB) and saved into MongoDB Atlas `uploaded_media` collection (`{ filename, contentType, data: Binary, size, uploadedAt }`).
+  * **Survives Ephemeral Cloud Deployments:** Because Hostinger git deployments wipe local container disks on every git pull/rebuild, uploaded banner binaries are permanently stored in Atlas and dynamically served via `/uploads/banners/[filename]/route.ts`.
+  * **Multi-Tier Serving & Local Caching:** The route handler checks local disk first, queries MongoDB Atlas if missing, writes back to local disk for speed, and provides a graceful 200 OK fallback image to prevent 404 errors in the browser.
+  * **Frontend Resiliency:** `WebinarBannerImage` client component wraps Next.js `<Image>` with an `onError` fallback to ensure broken image icons are never displayed to visitors.
 * **Multi-Status Campaign Lifecycle (`draft` ➔ `published` ➔ `archived`):**
   * **Default State:** All newly scheduled webinars strictly default to `status: 'draft'` (`is_active: 0`) preventing unintended public disclosure.
   * **Status Transitions:** Admin can dynamically transition status between Draft, Published, and Archived from the dashboard table dropdown or edit modal.
