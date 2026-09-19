@@ -373,7 +373,7 @@ export default function TimeCyclesPage() {
             </div>
 
             <p className="text-[11px] text-slate-400 pt-2">
-              SEBI Compliant Pure Educational Masterclass • Strictly No Advisory or Tips Given.
+              100% Pure Educational Masterclass • Strictly No Advisory or Tips Given.
             </p>
 
           </div>

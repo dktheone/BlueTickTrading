@@ -10,8 +10,8 @@ import {
 
 export const metadata = {
   title: "About Amit Gupta | Lead Mentor & Time Cycle Trader | Blue Tick Trading School",
-  description: "Learn about Amit Gupta, Founder of Blue Tick Trading School. 15+ years in financial markets, SEBI/NISM certified, specialized in W.D. Gann Time Cycles and Price Action.",
-  keywords: "Amit Gupta trader, Blue Tick Trading School founder, NISM certified trader, Time cycles mentor, Indian market educator",
+  description: "Learn about Amit Gupta, Founder of Blue Tick Trading School. 15+ years in financial markets, specialized in W.D. Gann Time Cycles and Price Action.",
+  keywords: "Amit Gupta trader, Blue Tick Trading School founder, Time cycles mentor, Indian market educator, price action trader",
 };
 
 export default function AboutAmitPage() {
@@ -44,8 +44,8 @@ export default function AboutAmitPage() {
       desc: "Navigated 3 major market cycles, bull runs, crashes, and black-swan volatility events.",
     },
     {
-      title: "SEBI / NISM Compliant",
-      desc: "Firm adherence to SEBI research analyst guidelines and purely educational knowledge dissemination.",
+      title: "Pure Educational Mentorship",
+      desc: "Dedicated to disciplined, rule-based chart education and independent trader literacy.",
     },
     {
       title: "TradingView Chartist",
@@ -89,7 +89,7 @@ export default function AboutAmitPage() {
                 {/* Verified Credentials Pills */}
                 <div className="pt-2 flex flex-wrap gap-3">
                   <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold text-white">
-                    <ShieldCheck className="w-4 h-4 text-[#2FFFB9]" /> SEBI / NISM Certified
+                    <ShieldCheck className="w-4 h-4 text-[#2FFFB9]" /> Time Cycle Specialist
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold text-white">
                     <TrendingUp className="w-4 h-4 text-[#2FFFB9]" /> TradingView Chartist
@@ -290,7 +290,7 @@ export default function AboutAmitPage() {
               </Link>
             </div>
             <p className="text-[11px] text-slate-400">
-              SEBI Compliant Pure Educational Masterclass • Strictly No Advisory or Tips Given.
+              100% Pure Educational Masterclass • Strictly No Advisory or Tips Given.
             </p>
           </div>
         </section>

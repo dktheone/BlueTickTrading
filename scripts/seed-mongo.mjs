@@ -111,7 +111,7 @@ async function seed() {
     await adminProfilesCol.insertOne({
       admin_user_id: 2,
       avatar_url: "/brand/avatar-amit.png",
-      bio: "SEBI & NISM Certified Market Mentor with 15+ years of live trading experience and 10+ years dedicated to Time Cycle mastery.",
+      bio: "Time-Cycle Strategist & Market Mentor with 15+ years of live trading experience and 10+ years dedicated to Time Cycle mastery.",
       designation: "Lead Mentor & Time-Cycle Strategist",
       updated_at: new Date().toISOString(),
     });
@@ -143,7 +143,7 @@ async function seed() {
       full_description_html: null,
       topics_json: topics,
       mentor_name: "Amit Gupta",
-      mentor_bio: "15+ Years Active Market Veteran • SEBI / NISM Certified Research Analyst",
+      mentor_bio: "15+ Years Active Market Veteran • Time Cycle Strategist",
       status: "published",
       is_active: 1,
       max_seats: 500,

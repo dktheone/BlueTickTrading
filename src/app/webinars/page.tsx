@@ -207,7 +207,7 @@ export default async function WebinarsPage() {
                       Amit Gupta <ShieldCheck className="w-4 h-4 text-[#10505C]" />
                     </h4>
                     <p className="text-xs text-slate-500">
-                      SEBI &amp; NISM Certified Mentor • 15+ Years Indian Markets • 10+ Years Time Cycle Research
+                      Lead Market Mentor • 15+ Years Indian Markets • 10+ Years Time Cycle Research
                     </p>
                   </div>
                 </div>

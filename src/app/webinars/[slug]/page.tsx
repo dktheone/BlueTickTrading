@@ -121,7 +121,7 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
     duration: dbWebinar?.duration_minutes ? `${dbWebinar.duration_minutes} Minutes` : "90 Minutes",
     platform: "Live on Zoom (Interactive Q&A)",
     speaker: dbWebinar?.mentor_name || "Amit Gupta",
-    experience: dbWebinar?.mentor_bio || "15+ Years Active Market Veteran • SEBI / NISM Certified",
+    experience: dbWebinar?.mentor_bio || "15+ Years Active Market Veteran • Time Cycle Strategist",
     bannerImageUrl: dbWebinar?.banner_image_url || "/images/traderoom/time-cycle-trading.jpg",
     price: "100% FREE",
     totalSeats: dbWebinar?.max_seats || 500,
@@ -420,7 +420,7 @@ export default async function WebinarLandingPage({ params, searchParams }: Webin
                 {/* Compliance Seal */}
                 <div className="p-6 rounded-3xl bg-[#F0F5F6] border border-slate-200 text-center space-y-2">
                   <ShieldCheck className="w-8 h-8 text-[#0E3B43] mx-auto" />
-                  <h4 className="text-sm font-black text-[#0E3B43]">SEBI Compliant Pure Education</h4>
+                  <h4 className="text-sm font-black text-[#0E3B43]">100% Pure Educational Masterclass</h4>
                   <p className="text-xs text-slate-600">
                     We do not provide tips, advisory services, or promised financial returns. All content is strictly for educational and mathematical study.
                   </p>

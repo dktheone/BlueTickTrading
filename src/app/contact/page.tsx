@@ -53,7 +53,7 @@ export default function ContactPage() {
     },
     {
       q: "Does Blue Tick Trading School offer stock tips or call services?",
-      a: "Absolutely not. We are strictly an educational institution compliant with SEBI regulations. We teach you how to analyze charts independently.",
+      a: "Absolutely not. We are strictly an educational training platform. We teach you how to analyze charts independently.",
     },
     {
       q: "Is there a physical branch I can visit?",

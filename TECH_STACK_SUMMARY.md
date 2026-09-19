@@ -82,7 +82,7 @@
 
 | Route Path | Type | File Location | Purpose & Audience |
 | :--- | :--- | :--- | :--- |
-| `/` | SSR | `src/app/page.tsx` | Refreshed Homepage featuring Traderoom design system: Live Masterclass Hook, Featured Active Webinar section with seat progress, Indian Market Segments (MCX, Index, Options), Mentor Profile (SEBI/NISM & TradingView), Why Time Cycles, and 3-field fast registration form. |
+| `/` | SSR | `src/app/page.tsx` | Refreshed Homepage featuring Traderoom design system: Live Masterclass Hook, Featured Active Webinar section with seat progress, Indian Market Segments (MCX, Index, Options), Mentor Profile (Time Cycles & TradingView), Why Time Cycles, and 3-field fast registration form. |
 | `/webinars` | Static/SSR | `src/app/webinars/page.tsx` | Dedicated Live Masterclass Hub resolving active cohort with 800x400 banner, live countdown, seat capacity counter, and all-cohort archives directory. |
 | `/webinars/[slug]` | Dynamic | `src/app/webinars/[slug]/page.tsx` | Dedicated dynamic Webinar Landing Page with countdown timer, masterclass timeline, educator profile, and embedded registration form. |
 | `/privacy-policy` | Static | `src/app/privacy-policy/page.tsx` | Meta Ads, Google Ads & DPDP Act 2023 compliant privacy disclosures; explicit statement on no payment data collected. |
@@ -92,7 +92,7 @@
 | `/refund-policy` | Static | `src/app/refund-policy/page.tsx` | Free webinar status + future paid course refund terms (48-hour pre-batch cancellation). |
 | `/time-cycles` | Static | `src/app/time-cycles/page.tsx` | Dedicated Core Concept Page: Price-Time Squaring, Turn Date Forecasting, Gann Geometry, and Institutional Traps. |
 | `/segments` | Static | `src/app/segments/page.tsx` | Consolidated Market Segments Page: MCX Commodities (Crude, Gold, Silver), Index Spot (Nifty, Bank Nifty), and Derivatives (F&O). |
-| `/about-amit` | Static | `src/app/about-amit/page.tsx` | Head Mentor Profile: 15+ years market journey, SEBI/NISM certification, TradingView ecosystem badge, and alumni community. |
+| `/about-amit` | Static | `src/app/about-amit/page.tsx` | Head Mentor Profile: 15+ years market journey, Time Cycle mastery, TradingView ecosystem badge, and alumni community. |
 | `/contact` | Static | `src/app/contact/page.tsx` | Dedicated Student Counseling & Support Desk with topic selector, inquiry form, and WhatsApp direct links. |
 | `/admin` | Dynamic SSR | `src/app/admin/page.tsx` | Protected Admin Portal (Shadcn + Material 3 Design) featuring Dual CRM Engine (Webinar Registrants with cohort dropdown + Student Contact Desk inquiries), Masterclass Campaign Studio, Admin Profile & Team Management, and Telegram 2FA OTP Security Controls. |
 | `/admin/login` | Static | `src/app/admin/login/page.tsx` | 2-Layer Admin Authentication Gate supporting Telegram OTP and scrypt password login. |

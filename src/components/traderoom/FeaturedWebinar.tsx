@@ -146,7 +146,7 @@ export default function FeaturedWebinar({ webinar }: FeaturedWebinarProps) {
                     Amit Gupta <ShieldCheck className="w-3.5 h-3.5 text-[#2FFFB9]" />
                   </h4>
                   <p className="text-[11px] text-slate-500">
-                    SEBI &amp; NISM Certified • 15+ Yrs Market Experience
+                    Time Cycle Strategist • 15+ Yrs Market Experience
                   </p>
                 </div>
               </div>

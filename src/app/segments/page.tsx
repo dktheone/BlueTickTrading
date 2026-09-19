@@ -338,7 +338,7 @@ export default function SegmentsPage() {
               </Link>
             </div>
             <p className="text-[11px] text-slate-400">
-              Zero Payment Gateway • Purely Educational Masterclass Compliant with SEBI Research Guidelines.
+              Zero Payment Gateway • Purely Educational Masterclass • Strictly No Tips or Calls.
             </p>
           </div>
         </section>

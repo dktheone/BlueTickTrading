@@ -61,7 +61,7 @@ export default function Community() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div className="flex items-start gap-2 text-xs text-slate-700">
                   <ShieldCheck className="w-4 h-4 text-[#10505C] shrink-0 mt-0.5" />
-                  <span><b>SEBI &amp; NISM Certified:</b> SEBI-Investor Certification Examination cleared.</span>
+                  <span><b>Time-Cycle Specialist:</b> 10+ Years dedicated to W.D. Gann Price-Time squaring.</span>
                 </div>
                 <div className="flex items-start gap-2 text-xs text-slate-700">
                   <TrendingUp className="w-4 h-4 text-[#10505C] shrink-0 mt-0.5" />

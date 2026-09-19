@@ -902,7 +902,7 @@ export async function createWebinar(data: {
       mentor_name: data.mentor_name?.trim() || "Amit Gupta",
       mentor_bio:
         data.mentor_bio?.trim() ||
-        "15+ Years Active Market Veteran • SEBI / NISM Certified Research Analyst",
+        "15+ Years Active Market Veteran • Time Cycle Strategist",
       status,
       is_active: isActive,
       max_seats: data.max_seats ?? 500,

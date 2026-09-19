@@ -133,7 +133,7 @@ export default function FeaturedWebinar() {
                     <UserCheck className="w-3.5 h-3.5" /> Head Mentor & Fund Trader
                   </span>
                   <span className="text-sm font-bold text-white">BlueTick Lead Trading Faculty</span>
-                  <p className="text-[11px] text-slate-400">8+ Years Market Experience • NISM Certified</p>
+                  <p className="text-[11px] text-slate-400">8+ Years Market Experience • Technical Analyst</p>
                 </div>
               </div>
 

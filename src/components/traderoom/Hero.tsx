@@ -81,7 +81,7 @@ export default function Hero() {
               <div className="text-left text-xs sm:text-sm text-slate-200">
                 <span className="font-bold text-white block">Thousands of Active Traders Mentored</span>
                 <span className="text-[#C5FF7C] flex items-center gap-1 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-[#2FFFB9]" /> SEBI &amp; NISM Certified Mentor • Amit Gupta
+                  <ShieldCheck className="w-4 h-4 text-[#2FFFB9]" /> Senior Market Mentor • Amit Gupta
                 </span>
               </div>
             </div>
